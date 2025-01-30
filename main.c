@@ -5,22 +5,26 @@
  */
 
 #include <stdio.h>
-#define INPUT_BUFFER 0
+#define VALID_USER_INPUT_LENGTH 2
+#define INPUT_BUFFER -2
 #define ENTER_PATIENT_RECORD 1
 #define SEARCH_PATIENT_BY_ID 2
 #define VIEW_ALL_PATIENTS 3
 #define DISCHARGE_PATIENT 4
 #define MANAGE_DOCTOR_SCHEDULE 5
 #define EXIT_PROGRAM 6
-
+#define INVALID_USER_INPUT (-1)
 
 int main(void)
 {
     int userInput;
+    char userInputFlag;
 
     do
     {
+        fflush(stdin);
         userInput = INPUT_BUFFER;
+        userInputFlag = '\n';
 
         printf("Welcome to the [blank] Hospital Patient Management System.\n"
                "Enter one of the following options:\n"
@@ -29,25 +33,49 @@ int main(void)
                "3: Search Patient by ID.\n"
                "4: Discharge Patient.\n"
                "5: Manage Doctor Schedule:\n"
-               "6: Exit.");
+               "6: Exit.\n");
 
-        userInput = getchar();
+
+
+        if(scanf("%d%c", &userInput, &userInputFlag) != VALID_USER_INPUT_LENGTH ||
+            userInputFlag != '\n')
+        {
+            userInput = INVALID_USER_INPUT;
+        }
 
         switch(userInput)
         {
             case ENTER_PATIENT_RECORD:
+                // enter patient record function
+                puts("enter patient records.\n");
+                break;
             case SEARCH_PATIENT_BY_ID:
+                // search patients function
+                puts("search patients.\n");
+                break;
             case VIEW_ALL_PATIENTS:
+                // view all patients function
+                puts("view all patients.\n");
+                break;
             case DISCHARGE_PATIENT:
+                // discharge patient function
+                puts("discharge patients.\n");
+                break;
             case MANAGE_DOCTOR_SCHEDULE:
+                // manage doctor sched function
+                puts("manage doctor sched.\n");
+                break;
             case EXIT_PROGRAM:
+                puts("Exiting program, have a nice day!");
+                return 0;
             default:
+                printf("Not a valid input, please enter "
+                       "one of the options above.\n");
+                userInput = INVALID_USER_INPUT;
         }
 
-
-
-    }
-    while ()
+    } while (userInput == INVALID_USER_INPUT ||
+             userInput != EXIT_PROGRAM);
 
     return 0;
 }
