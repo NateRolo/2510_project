@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+
 #define VALID_USER_INPUT_LENGTH 2
 #define INPUT_BUFFER -2
 #define ENTER_PATIENT_RECORD 1
