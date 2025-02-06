@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "patient.h"
 
+// constants for menu
 #define ENTER_PATIENT_RECORD 1
 #define SEARCH_PATIENT_BY_ID 2
 #define VIEW_ALL_PATIENTS 3
@@ -15,9 +16,22 @@
 #define EXIT_PROGRAM 6
 #define INVALID_USER_INPUT (-1)
 
+#define MAX_PATIENT_CAPACITY 50
+
+// function prototypes
+void menu();
 void clearInputBuffer();
 
+// hospital patients
+struct patient patients[MAX_PATIENT_CAPACITY];
+
 int main(void)
+{
+    menu();
+    return 0;
+}
+
+void menu()
 {
     int userInput;
 
@@ -45,36 +59,34 @@ int main(void)
         {
             case ENTER_PATIENT_RECORD:
                 // enter patient record function
-                puts("enter patient records.\n");
-                break;
+                    puts("enter patient records.\n");
+            break;
             case SEARCH_PATIENT_BY_ID:
                 // search patients function
-                puts("search patients.\n");
-                break;
+                    puts("search patients.\n");
+            break;
             case VIEW_ALL_PATIENTS:
                 // view all patients function
-                puts("view all patients.\n");
-                break;
+                    puts("view all patients.\n");
+            break;
             case DISCHARGE_PATIENT:
                 // discharge patient function
-                puts("discharge patients.\n");
-                break;
+                    puts("discharge patients.\n");
+            break;
             case MANAGE_DOCTOR_SCHEDULE:
                 // manage doctor sched function
-                puts("manage doctor sched.\n");
-                break;
+                    puts("manage doctor sched.\n");
+            break;
             case EXIT_PROGRAM:
                 puts("Exiting program, have a nice day!");
-                return 0;
+            return 0;
             default:
                 printf("Not a valid input, please enter "
                        "one of the options above.\n");
-                userInput = INVALID_USER_INPUT;
+            userInput = INVALID_USER_INPUT;
         }
 
     } while (userInput != EXIT_PROGRAM);
-
-    return 0;
 }
 
 void clearInputBuffer()
