@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+#include "patient.h"
 
 #define ENTER_PATIENT_RECORD 1
 #define SEARCH_PATIENT_BY_ID 2
