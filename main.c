@@ -33,7 +33,8 @@ int main(void)
                "5: Manage Doctor Schedule:\n"
                "6: Exit.\n");
 
-        if (scanf("%d", &userInput) != 1) {
+        if (scanf("%d", &userInput) != 1)
+        {
             printf("Invalid input. Please enter a number.\n");
             clearInputBuffer();
             continue;
