@@ -6,8 +6,6 @@
 
 #include <stdio.h>
 
-#define VALID_USER_INPUT_LENGTH 2
-#define INPUT_BUFFER -2
 #define ENTER_PATIENT_RECORD 1
 #define SEARCH_PATIENT_BY_ID 2
 #define VIEW_ALL_PATIENTS 3
@@ -16,16 +14,15 @@
 #define EXIT_PROGRAM 6
 #define INVALID_USER_INPUT (-1)
 
+void clearInputBuffer();
+
 int main(void)
 {
     int userInput;
-    char userInputFlag;
 
     do
     {
-        fflush(stdin);
-        userInput = INPUT_BUFFER;
-        userInputFlag = '\n';
+        userInput = INVALID_USER_INPUT;
 
         printf("Welcome to the [blank] Hospital Patient Management System.\n"
                "Enter one of the following options:\n"
@@ -36,10 +33,10 @@ int main(void)
                "5: Manage Doctor Schedule:\n"
                "6: Exit.\n");
 
-        if(scanf("%d%c", &userInput, &userInputFlag) != VALID_USER_INPUT_LENGTH ||
-            userInputFlag != '\n')
-        {
-            userInput = INVALID_USER_INPUT;
+        if (scanf("%d", &userInput) != 1) {
+            printf("Invalid input. Please enter a number.\n");
+            clearInputBuffer();
+            continue;
         }
 
         switch(userInput)
@@ -73,8 +70,12 @@ int main(void)
                 userInput = INVALID_USER_INPUT;
         }
 
-    } while (userInput == INVALID_USER_INPUT ||
-             userInput != EXIT_PROGRAM);
+    } while (userInput != EXIT_PROGRAM);
 
     return 0;
+}
+
+void clearInputBuffer()
+{
+    while(getchar() != '\n');
 }
