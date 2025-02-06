@@ -36,8 +36,6 @@ int main(void)
                "5: Manage Doctor Schedule:\n"
                "6: Exit.\n");
 
-
-
         if(scanf("%d%c", &userInput, &userInputFlag) != VALID_USER_INPUT_LENGTH ||
             userInputFlag != '\n')
         {
