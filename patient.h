@@ -8,7 +8,7 @@
 #ifndef PATIENT_H
 #define PATIENT_H
 
-struct
+struct patient
 {
     int patientId;
     char name[100];
