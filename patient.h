@@ -1,14 +1,14 @@
 /*
- * Author: Nathan Oloresisimo
+ * Author: Arsh M, Nathan O
  * Date: 2/6/2025
- * Purpose:
+ * Purpose: This file represents a patient with patient id, name, age, diagonsis, and room number.
  */
 
 
 #ifndef PATIENT_H
 #define PATIENT_H
 
-typedef struct
+struct
 {
     int patientId;
     char name[100];
