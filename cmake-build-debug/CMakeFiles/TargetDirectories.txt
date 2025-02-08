@@ -1,3 +1,0 @@
-C:/Users/olorn/CLionProjects/2510_project/cmake-build-debug/CMakeFiles/2510_project.dir
-C:/Users/olorn/CLionProjects/2510_project/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/olorn/CLionProjects/2510_project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
