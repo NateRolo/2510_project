@@ -1,4 +1,4 @@
 /main.exe
 /.idea
-/c-make-build/debug/
+/cmake-build/debug/
 CMakeLists.txt
