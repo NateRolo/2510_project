@@ -8,13 +8,13 @@
 #ifndef PATIENT_H
 #define PATIENT_H
 
-struct patient
+typedef struct
 {
     int patientId;
     char name[100];
     int age;
     char diagnosis[255];
     int roomNumber;
-};
+} Patient;
 
 #endif //PATIENT_H

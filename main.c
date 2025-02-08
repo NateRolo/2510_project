@@ -5,6 +5,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "patient.h"
 
 // constants for menu
@@ -23,13 +24,146 @@ void menu();
 void clearInputBuffer();
 
 // hospital patients
-struct patient patients[MAX_PATIENT_CAPACITY];
+Patient patients[MAX_PATIENT_CAPACITY];
+
+int totalPatients = 0;
+int patientIDCounter = 1;
+
 
 int main(void)
 {
     menu();
     return 0;
 }
+
+void addPatientRecord()
+{
+    if(totalPatients >= MAX_PATIENT_CAPACITY)
+    {
+        printf("Max patient capacity reached!");
+        return;
+    }
+
+    int patientID;
+    char patientName[100];
+    int patientAge;
+    char patientDiagnosis[255];
+    int roomNumber;
+
+    printf("Enter patient name:\n");
+    fgets(patientName, 100, stdin);
+    patientName[strcspn(patientName, "\n")] = 0;
+
+    if(strlen(patientName) == 0)
+    {
+        printf("Patient name cannot be blank!\n");
+        return;
+    }
+
+    printf("Enter patient age:\n");
+    scanf("%d", &patientAge);
+    if (patientAge <= 0)
+    {
+        printf("Invalid age! Please enter a positive number.\n");
+        return;
+    }
+    getchar();
+
+
+    printf("Enter patient diagnosis:\n");
+    fgets(patientDiagnosis, 255, stdin);
+    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = 0;
+
+    if(strlen(patientDiagnosis) == 0)
+    {
+        printf("Patient name cannot be blank!\n");
+        return;
+    }
+
+    printf("Enter patient room:\n");
+    scanf("%d", &roomNumber);
+
+    if (roomNumber <= 0)
+    {
+        printf("Invalid Room Number: Negative");
+        return;
+    }
+    getchar();
+    Patient patient1;
+
+    patient1.patientId = patientIDCounter;
+    strcpy(patient1.name, patientName);
+    patient1.age = patientAge;
+    strcpy(patient1.diagnosis, patientDiagnosis);
+    patient1.roomNumber = roomNumber;
+
+    patients[totalPatients] = patient1;
+    totalPatients++;
+    patientIDCounter++;
+    printf("Patient added!");
+
+}
+
+void viewPatientRecords()
+{
+    if (totalPatients == 0)
+    {
+        printf("No Patients Admitted...");
+        return;
+    }
+
+    printf("--- Patient Record ---\n");
+    for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    {
+        if (patients[i].patientId != 0)
+        {
+            printf("Patient ID: %d\n", patients[i].patientId);
+            printf("Patient Name: %s\n", patients[i].name);
+            printf("Age: %d\n", patients[i].age);
+            printf("Diagnosis: %s\n", patients[i].diagnosis);
+            printf("Room Number: %d\n", patients[i].roomNumber);
+            printf("---------------------------------------");
+        }
+    }
+}
+
+int patientExists(int id)
+{
+    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    {
+        if (patients[i].patientId == id)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void searchPatientById()
+{
+    int id, index;
+
+    printf("Enter A Patient Id: ");
+    scanf("%d", &id);
+
+    index = patientExists(id);
+
+    if (index != -1)
+    {
+        printf("Patient ID: %d\n", patients[index].patientId);
+        printf("Patient Name: %s\n", patients[index].name);
+        printf("Age: %d\n", patients[index].age);
+        printf("Diagnosis: %s\n", patients[index].diagnosis);
+        printf("Room Number: %d\n", patients[index].roomNumber);
+        printf("---------------------------------------");
+    } else
+    {
+        printf("Patient Does Not Exist!");
+    }
+}
+
+
 
 void menu()
 {
@@ -42,8 +176,8 @@ void menu()
         printf("Welcome to the [blank] Hospital Patient Management System.\n"
                "Enter one of the following options:\n"
                "1: Enter Patient Record.\n"
-               "2: View All Patients.\n"
-               "3: Search Patient by ID.\n"
+               "2: Search Patient by ID.\n"
+               "3: View All Patients.\n"
                "4: Discharge Patient.\n"
                "5: Manage Doctor Schedule:\n"
                "6: Exit.\n");
@@ -59,15 +193,18 @@ void menu()
         {
             case ENTER_PATIENT_RECORD:
                 // enter patient record function
-                    puts("enter patient records.\n");
+                getchar();
+                addPatientRecord();
             break;
             case SEARCH_PATIENT_BY_ID:
                 // search patients function
-                    puts("search patients.\n");
+                    getchar();
+                    searchPatientById();
             break;
             case VIEW_ALL_PATIENTS:
-                // view all patients function
-                    puts("view all patients.\n");
+                getchar();
+                viewPatientRecords();
+
             break;
             case DISCHARGE_PATIENT:
                 // discharge patient function
@@ -79,7 +216,7 @@ void menu()
             break;
             case EXIT_PROGRAM:
                 puts("Exiting program, have a nice day!");
-            return 0;
+            return;
             default:
                 printf("Not a valid input, please enter "
                        "one of the options above.\n");
