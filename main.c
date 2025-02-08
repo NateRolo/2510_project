@@ -48,6 +48,7 @@ int main(void)
     return 0;
 }
 
+// add patient record function
 void addPatientRecord()
 {
     if(totalPatients >= MAX_PATIENT_CAPACITY)
