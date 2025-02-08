@@ -89,18 +89,18 @@ void addPatientRecord()
         return;
     }
     getchar();
-    Patient patient1;
+    Patient newPatient;
 
-    patient1.patientId = patientIDCounter;
-    strcpy(patient1.name, patientName);
-    patient1.age = patientAge;
-    strcpy(patient1.diagnosis, patientDiagnosis);
-    patient1.roomNumber = roomNumber;
+    newPatient.patientId = patientIDCounter;
+    strcpy(newPatient.name, patientName);
+    newPatient.age = patientAge;
+    strcpy(newPatient.diagnosis, patientDiagnosis);
+    newPatient.roomNumber = roomNumber;
 
-    patients[totalPatients] = patient1;
+    patients[totalPatients] = newPatient;
     totalPatients++;
     patientIDCounter++;
-    printf("Patient added!");
+    printf("Patient added!\n");
 
 }
 
