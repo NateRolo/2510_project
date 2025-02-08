@@ -61,6 +61,7 @@ void addPatientRecord()
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
 
+    // get patient name
     printf("Enter patient name:\n");
     fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
     patientName[strcspn(patientName, "\n")] = 0;
@@ -73,6 +74,7 @@ void addPatientRecord()
         return;
     }
 
+    // get patient age
     printf("Enter patient age:\n");
     scanf("%d", &patientAge);
     
@@ -83,7 +85,7 @@ void addPatientRecord()
                MIN_AGE_YEARS, MAX_AGE_YEARS);
         return;
     }
-    getchar();
+    clearInputBuffer();
 
     printf("Enter patient diagnosis:\n");
     fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
@@ -97,6 +99,7 @@ void addPatientRecord()
         return;
     }
 
+    // get patient room number
     printf("Enter patient room:\n");
     scanf("%d", &roomNumber);
 
@@ -107,7 +110,7 @@ void addPatientRecord()
                MIN_ROOM_NUMBER, MAX_ROOM_NUMBER);
         return;
     }
-    getchar();
+    clearInputBuffer();
 
     // create new patient
     Patient newPatient;
