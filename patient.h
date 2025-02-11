@@ -32,6 +32,12 @@
 #define IS_EMPTY 0
 
 #define DEFAULT_ID 1
+#define INVALID_ID 0
+
+#define NULL_TERMINATOR 0
+
+#define REMOVE_PATIENT_ARRAY_MAX 49
+#define NEXT_INDEX_OFFSET 1
 
 // patient struct
 typedef struct

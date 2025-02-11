@@ -41,7 +41,6 @@ void addPatientRecord()
 
     if(getPatientName(patientName) == IS_NOT_VALID)
     {
-        clearInputBuffer();
         return;
     }
 
@@ -75,7 +74,7 @@ void addPatientRecord()
 
 void viewPatientRecords()
 {
-    if (totalPatients == 0)
+    if (totalPatients == IS_EMPTY)
     {
         printf("No Patients Admitted...\n");
         return;
@@ -83,7 +82,7 @@ void viewPatientRecords()
 
     for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
     {
-        if (patients[i].patientId != 0)
+        if (patients[i].patientId != INVALID_ID)
         {
             printPatientInfo(&patients[i]);
         }
@@ -139,16 +138,16 @@ void dischargePatient()
 
 static int getPatientName(char patientName[])
 {
-    printf("Enter patient name:\n");
+    printf("Enter Patient Name:\n");
     fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
-    patientName[strcspn(patientName, "\n")] = 0;
+    patientName[strcspn(patientName, "\n")] = NULL_TERMINATOR;
     
     return validatePatientName(patientName);
 }
 
 static int getPatientAge(int* patientAge)
 {
-    printf("Enter patient age:\n");
+    printf("Enter Patient Age:\n");
     scanf("%d", patientAge);
     clearInputBuffer();
     
@@ -157,16 +156,16 @@ static int getPatientAge(int* patientAge)
 
 static int getPatientDiagnosis(char patientDiagnosis[])
 {
-    printf("Enter patient diagnosis:\n");
+    printf("Enter Patient Diagnosis:\n");
     fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
-    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = '\0';
+    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = NULL_TERMINATOR;
     
     return validatePatientDiagnosis(patientDiagnosis);
 }
 
 static int getRoomNumber(int* roomNumber)
 {
-    printf("Enter patient room:\n");
+    printf("Enter Patient Room:\n");
     scanf("%d", roomNumber);
     clearInputBuffer();
     
@@ -209,9 +208,9 @@ static int confirmDischarge(int patientIndex)
 
 static void removePatientFromSystem(int index)
 {
-    for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
+    for(int i = index; i < REMOVE_PATIENT_ARRAY_MAX; i++)
     {
-        patients[i] = patients[i + 1];
+        patients[i] = patients[i + NEXT_INDEX_OFFSET];
     }
     totalPatients--;
 }
@@ -230,7 +229,7 @@ static int patientExists(int id)
 
 static int checkRoomOccupancy(int roomNumber)
 {
-    for(int i = 0; i < MAX_ROOM_NUMBER + 1; i++)
+    for(int i = 0; i <= MAX_ROOM_NUMBER; i++)
     {
         if(patients[i].roomNumber == roomNumber)
         {
