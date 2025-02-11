@@ -12,4 +12,10 @@ typedef struct
     int age;
 } Doctor;
 
+Doctor doctors[] = {
+    {10, "Raymond Redington", 44},
+    {20, "George Washington", 67},
+    {30, "Sofia Gomez", 33}
+};
+
 #endif //DOCTOR_H
