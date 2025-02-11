@@ -26,7 +26,10 @@
 
 #define IS_INVALID 0
 #define IS_VALID 1
+
 #define PATIENT_NOT_FOUND -1
+
+#define IS_EMPTY 0
 
 // patient struct
 typedef struct
