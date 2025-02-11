@@ -7,6 +7,8 @@
 #ifndef HOSPITAL_PATIENT_H
 #define HOSPTAL_PATIENT_H
 
+#define MAX_PATIENT_CAPACITY 50
+
 #define MAX_ROOM_NUMBER 50
 #define MIN_ROOM_NUMBER 1
 
@@ -21,6 +23,9 @@
 
 #define MIN_AGE_YEARS 0
 #define MAX_AGE_YEARS 120
+
+#define IS_INVALID 0
+#define IS_VALID 1
 
 // patient struct
 typedef struct
@@ -40,5 +45,6 @@ void dischargePatient();
 
 int patientExists(int id);
 int checkRoomOccupancy(int roomNumber);
+int validatePatientName(char patientName[]);
 
 #endif //PATIENT_H

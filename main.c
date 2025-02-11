@@ -20,7 +20,6 @@
 
 #define MAX_PATIENT_CAPACITY 50
 
-
 #define MAX_ROOM_NUMBER 50
 #define MIN_ROOM_NUMBER 1
 
