@@ -36,13 +36,20 @@
 #define MIN_AGE_YEARS 0
 #define MAX_AGE_YEARS 120
 
-
 // function prototypes
 void menu();
 void clearInputBuffer();
+void addPatientRecord();
+void viewPatientRecords();
+void searchPatientById();
+
+int patientExists(int id);
+int checkRoomOccupancy(int roomNumber);
+
 
 // hospital patients
 Patient patients[MAX_PATIENT_CAPACITY];
+int patientRooms[MAX_PATIENT_CAPACITY];
 
 int totalPatients = 0;
 int patientIDCounter = 1;
@@ -109,6 +116,7 @@ void addPatientRecord()
     // get patient room number
     printf("Enter patient room:\n");
     scanf("%d", &roomNumber);
+    clearInputBuffer();
 
     if (roomNumber < MIN_ROOM_NUMBER || 
         roomNumber > MAX_ROOM_NUMBER)
@@ -175,18 +183,7 @@ void viewPatientRecords()
     }
 }
 
-int patientExists(int id)
-{
-    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
-    {
-        if (patients[i].patientId == id)
-        {
-            return i;
-        }
-    }
 
-    return -1;
-}
 
 void searchPatientById()
 {
@@ -322,4 +319,29 @@ void menu()
 void clearInputBuffer()
 {
     while(getchar() != '\n');
+}
+
+int patientExists(int id)
+{
+    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    {
+        if (patients[i].patientId == id)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int checkRoomOccupancy(int roomNumber)
+{
+    for(int i = 0; i < MAX_ROOM_NUMBER + 1; i++)
+    {
+        if(patients[i].roomNumber == roomNumber)
+        {
+            return i;
+        }
+    }
+    return -1;
 }
