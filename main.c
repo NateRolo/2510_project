@@ -186,12 +186,27 @@ void dischargePatient()
 
     if(index != -1)
     {
-        for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
+        char confirm;
+
+        printf("Patient ID: %d\n", patients[index].patientId);
+        printf("Patient Name: %s\n", patients[index].name);
+        printf("Are you sure you want to discharge this patient? (y/n)\n");
+        scanf("%c", &confirm);
+        clearInputBuffer();
+
+        if(confirm == 'y')
         {
-            patients[i] = patients[i + 1];
+            for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
+            {
+                patients[i] = patients[i + 1];
+            }
+            totalPatients--;
+            printf("Patient has been discharged!\n");
         }
-        totalPatients--;
-        printf("Patient has been discharged!\n");
+        else
+        {
+            printf("Patient discharge cancelled.\n");
+        }
     }
     else
     {
