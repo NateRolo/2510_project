@@ -15,9 +15,14 @@
 #define DISCHARGE_PATIENT 4
 #define MANAGE_DOCTOR_SCHEDULE 5
 #define EXIT_PROGRAM 6
+
 #define INVALID_USER_INPUT (-1)
 
 #define MAX_PATIENT_CAPACITY 50
+
+
+#define MAX_ROOM_NUMBER 50
+#define MIN_ROOM_NUMBER 1
 
 #define MIN_PATIENT_NAME_LENGTH 1
 #define MAX_PATIENT_NAME_LENGTH 100
@@ -30,6 +35,7 @@
 
 #define MIN_AGE_YEARS 0
 #define MAX_AGE_YEARS 120
+
 
 // function prototypes
 void menu();
@@ -53,7 +59,7 @@ void addPatientRecord()
 {
     if(totalPatients >= MAX_PATIENT_CAPACITY)
     {
-        printf("Max patient capacity reached!");
+        printf("Max patient capacity reached!\n");
         return;
     }
 
@@ -138,9 +144,12 @@ void addPatientRecord()
     totalPatients++;
     patientIDCounter++;
 
-    // print success message
-    printf("Patient added!\n");
-
+    printf("Patient added successfully!\n");
+    printf("Patient ID: %d\n", patient1.patientId);
+    printf("Patient Name: %s\n", patient1.name);
+    printf("Patient Age: %d\n", patient1.age);
+    printf("Patient Diagnosis: %s\n", patient1.diagnosis);
+    printf("Patient Room Number: %d\n", patient1.roomNumber);
 }
 
 void viewPatientRecords()
@@ -195,14 +204,59 @@ void searchPatientById()
         printf("Age: %d\n", patients[index].age);
         printf("Diagnosis: %s\n", patients[index].diagnosis);
         printf("Room Number: %d\n", patients[index].roomNumber);
-        printf("---------------------------------------");
+        printf("---------------------------------------\n");
     } else
     {
-        printf("Patient Does Not Exist!");
+        printf("Patient Does Not Exist!\n");
     }
 }
 
+void dischargePatient()
+{
+    if(totalPatients == 0)
+    {
+        printf("No patients to discharge!\n");
+    }
 
+    int index;
+    int patientId;
+
+    printf("Enter ID of patient to discharge:\n");
+    scanf("%d", &patientId);
+    clearInputBuffer();
+
+    index = patientExists(patientId);
+
+    if(index != -1)
+    {
+        char confirm;
+
+        printf("Patient ID: %d\n", patients[index].patientId);
+        printf("Patient Name: %s\n", patients[index].name);
+        printf("Are you sure you want to discharge this patient? (y/n)\n");
+        scanf("%c", &confirm);
+        clearInputBuffer();
+
+        if(confirm == 'y')
+        {
+            for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
+            {
+                patients[i] = patients[i + 1];
+            }
+            totalPatients--;
+            printf("Patient has been discharged!\n");
+        }
+        else
+        {
+            printf("Patient discharge cancelled.\n");
+        }
+    }
+    else
+    {
+        printf("Patient is not in system.\n");
+    }
+
+}
 
 void menu()
 {
@@ -212,7 +266,7 @@ void menu()
     {
         userInput = INVALID_USER_INPUT;
 
-        printf("Welcome to the [blank] Hospital Patient Management System.\n"
+        printf("\nWelcome to the [blank] Hospital Patient Management System.\n"
                "Enter one of the following options:\n"
                "1: Enter Patient Record.\n"
                "2: Search Patient by ID.\n"
@@ -246,15 +300,15 @@ void menu()
 
             break;
             case DISCHARGE_PATIENT:
-                // discharge patient function
-                    puts("discharge patients.\n");
+                clearInputBuffer();
+                dischargePatient();
             break;
             case MANAGE_DOCTOR_SCHEDULE:
                 // manage doctor sched function
                     puts("manage doctor sched.\n");
             break;
             case EXIT_PROGRAM:
-                puts("Exiting program, have a nice day!");
+                puts("Exiting program, have a nice day!\n");
             return;
             default:
                 printf("Not a valid input, please enter "
