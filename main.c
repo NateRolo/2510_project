@@ -425,6 +425,15 @@ void assignDoctor()
 
     printf("Assigning Dr.%s for %s %s.\n", doctors[doctorId].name, getDayOfWeek(day), getTimeOfDay(time));
 
+    if (weeklySchedule[day][time].doctorId != 0) {
+        printf("Doctor Already Assigned. Would you like to proceed? (y / n)\n");
+        do {
+            scanf("%c", &proceed);
+            clearInputBuffer();
+        } while (proceed != 'y' &&
+            proceed != 'n');
+    }
+
     if (proceed == 'y') {
         weeklySchedule[day][time] = doctors[doctorId];
     }
