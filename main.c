@@ -51,8 +51,21 @@ int checkRoomOccupancy(int roomNumber);
 Patient patients[MAX_PATIENT_CAPACITY];
 int patientRooms[MAX_PATIENT_CAPACITY];
 
+
+// hospital doctors;
+Doctor doctors[] = {
+    {10, "Raymond Redington", 44},
+    {20, "George Washington", 67},
+    {30, "Sofia Gomez", 33}
+};
+
+Doctor weeklySchedule[7][3];
+char* daysOfWeek[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+char* timeOfDay[] = {"Morning", "Afternoon", "Evening"};
+
 int totalPatients = 0;
 int patientIDCounter = 1;
+
 
 int main(void)
 {
