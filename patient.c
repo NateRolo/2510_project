@@ -81,7 +81,6 @@ void viewPatientRecords()
         return;
     }
 
-    printf("--- Patient Record ---\n");
     for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
     {
         if (patients[i].patientId != 0)
@@ -103,7 +102,7 @@ void searchPatientById()
 
     if (index == PATIENT_NOT_FOUND)
     {
-        printf("Patient Does Not Exist!\n");
+        printf("Patient does not exist!\n");
     } 
     else
     {
@@ -143,7 +142,6 @@ static int getPatientName(char patientName[])
     printf("Enter patient name:\n");
     fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
     patientName[strcspn(patientName, "\n")] = 0;
-    
     
     return validatePatientName(patientName);
 }
