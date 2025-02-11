@@ -94,6 +94,12 @@ void searchPatientById()
     int id;
     int index;
 
+    if (totalPatients == IS_EMPTY)
+    {
+        printf("No Patients Admitted...\n");
+        return;
+    }
+
     printf("Enter A Patient Id: ");
     scanf("%d", &id);
     clearInputBuffer();
