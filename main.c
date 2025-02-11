@@ -314,10 +314,6 @@ void menu()
     } while (userInput != EXIT_PROGRAM);
 }
 
-void clearInputBuffer()
-{
-    while(getchar() != '\n');
-}
 
 int patientExists(int id)
 {
