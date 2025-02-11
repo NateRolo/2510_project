@@ -20,69 +20,32 @@ void addPatientRecord()
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
 
-    // get patient name
-    printf("Enter patient name:\n");
-    fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
-    patientName[strcspn(patientName, "\n")] = '\0';
-    clearInputBuffer();
-
-    if(validatePatientName(patientName) == IS_INVALID)
+    if(getPatientName(patientName) == IS_INVALID)
     {
         return;
     }
 
-    // get patient age
-    printf("Enter patient age:\n");
-    scanf("%d", &patientAge);
-    clearInputBuffer();
-
-    if(validatePatientAge(patientAge) == IS_INVALID)
+    if(getPatientAge(&patientAge) == IS_INVALID)
     {
         return;
     }
 
-    // get patient diagnosis
-    printf("Enter patient diagnosis:\n");
-    fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
-    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = '\0';
-
-    if(validatePatientDiagnosis(patientDiagnosis) == IS_INVALID)
+    if(getPatientDiagnosis(patientDiagnosis) == IS_INVALID)
     {
         return;
     }
 
-    // get patient room number
-    printf("Enter patient room:\n");
-    scanf("%d", &roomNumber);
-    clearInputBuffer();
-
-    if(validateRoomNumber(roomNumber) == IS_INVALID)
+    if(getRoomNumber(&roomNumber) == IS_INVALID)
     {
         return;
     }
 
-    // create new patient
-    Patient newPatient;
+    Patient newPatient = createNewPatient(patientName,
+                                          patientAge,
+                                          patientDiagnosis,
+                                          roomNumber);
 
-    // set patient id
-    newPatient.patientId = patientIDCounter;
-
-    // set patient name
-    strcpy(newPatient.name, patientName);
-
-    // set patient age
-    newPatient.age = patientAge;
-
-    // set patient diagnosis
-    strcpy(newPatient.diagnosis, patientDiagnosis);
-
-    // set patient room number
-    newPatient.roomNumber = roomNumber;
-
-    // add patient to array
     patients[totalPatients] = newPatient;
-
-    // increment total patients and patient id counter
     totalPatients++;
     patientIDCounter++;
 
@@ -123,7 +86,12 @@ void searchPatientById()
     } 
     else
     {
-        printPatientInfo(&patients[index]);
+        printf("Patient ID: %d\n", patients[index].patientId);
+        printf("Patient Name: %s\n", patients[index].name);
+        printf("Age: %d\n", patients[index].age);
+        printf("Diagnosis: %s\n", patients[index].diagnosis);
+        printf("Room Number: %d\n", patients[index].roomNumber);
+        printf("---------------------------------------\n");
     }
 }
 
@@ -152,6 +120,57 @@ void dischargePatient()
     {
         printf("Patient discharge cancelled.\n");
     }
+}
+
+static int getPatientName(char patientName[])
+{
+    printf("Enter patient name:\n");
+    fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
+    patientName[strcspn(patientName, "\n")] = '\0';
+    clearInputBuffer();
+    
+    return validatePatientName(patientName);
+}
+
+static int getPatientAge(int* patientAge)
+{
+    printf("Enter patient age:\n");
+    scanf("%d", patientAge);
+    clearInputBuffer();
+    
+    return validatePatientAge(*patientAge);
+}
+
+static int getPatientDiagnosis(char patientDiagnosis[])
+{
+    printf("Enter patient diagnosis:\n");
+    fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
+    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = '\0';
+    
+    return validatePatientDiagnosis(patientDiagnosis);
+}
+
+static int getRoomNumber(int* roomNumber)
+{
+    printf("Enter patient room:\n");
+    scanf("%d", roomNumber);
+    clearInputBuffer();
+    
+    return validateRoomNumber(*roomNumber);
+}
+
+static Patient createNewPatient(const char patientName[],
+                                int patientAge,
+                                const char patientDiagnosis[],
+                                int roomNumber)
+{
+    Patient newPatient;
+    newPatient.patientId = patientIDCounter;
+    strcpy(newPatient.name, patientName);
+    newPatient.age = patientAge;
+    strcpy(newPatient.diagnosis, patientDiagnosis);
+    newPatient.roomNumber = roomNumber;
+    return newPatient;
 }
 
 static int getPatientIndexForDischarge()
