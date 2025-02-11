@@ -34,9 +34,16 @@
 // function prototypes
 void menu();
 void clearInputBuffer();
+void addPatientRecord();
+void viewPatientRecords();
+int patientExists(int id);
+void searchPatientById();
+
+
 
 // hospital patients
 Patient patients[MAX_PATIENT_CAPACITY];
+int patientRooms[MAX_PATIENT_CAPACITY];
 
 int totalPatients = 0;
 int patientIDCounter = 1;
@@ -103,6 +110,7 @@ void addPatientRecord()
     // get patient room number
     printf("Enter patient room:\n");
     scanf("%d", &roomNumber);
+    clearInputBuffer();
 
     if (roomNumber < MIN_ROOM_NUMBER || 
         roomNumber > MAX_ROOM_NUMBER)
@@ -111,7 +119,8 @@ void addPatientRecord()
                MIN_ROOM_NUMBER, MAX_ROOM_NUMBER);
         return;
     }
-    clearInputBuffer();
+    
+    
 
     // create new patient
     Patient newPatient;
@@ -269,3 +278,4 @@ void clearInputBuffer()
 {
     while(getchar() != '\n');
 }
+
