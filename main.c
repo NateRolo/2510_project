@@ -36,9 +36,10 @@ void menu();
 void clearInputBuffer();
 void addPatientRecord();
 void viewPatientRecords();
-int patientExists(int id);
 void searchPatientById();
 
+int patientExists(int id);
+int checkRoomOccupancy(int roomNumber);
 
 
 // hospital patients
@@ -120,7 +121,10 @@ void addPatientRecord()
         return;
     }
     
-    
+    if(checkRoomOccupancy(roomNumber) != -1)
+    {
+        printf("That room is currently occupied, choose a different room.\n");
+    }
 
     // create new patient
     Patient newPatient;
@@ -175,18 +179,7 @@ void viewPatientRecords()
     }
 }
 
-int patientExists(int id)
-{
-    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
-    {
-        if (patients[i].patientId == id)
-        {
-            return i;
-        }
-    }
 
-    return -1;
-}
 
 void searchPatientById()
 {
@@ -279,3 +272,27 @@ void clearInputBuffer()
     while(getchar() != '\n');
 }
 
+int patientExists(int id)
+{
+    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    {
+        if (patients[i].patientId == id)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int checkRoomOccupancy(int roomNumber)
+{
+    for(int i = 0; i < MAX_ROOM_NUMBER + 1; i++)
+    {
+        if(patients[i].roomNumber == roomNumber)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
