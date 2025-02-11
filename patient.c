@@ -143,57 +143,61 @@ void searchPatientById()
 
 void dischargePatient()
 {
-    if(totalPatients == 0)
+    if(totalPatients == IS_EMPTY)
     {
         printf("No patients to discharge!\n");
+        return;
     }
 
-    int index;
-    int patientId;
-
-    printf("Enter ID of patient to discharge:\n");
-    scanf("%d", &patientId);
-    clearInputBuffer();
-
-    index = patientExists(patientId);
-
-    if(index != -1)
+    int index = getPatientIndexForDischarge();
+    
+    if(index == PATIENT_NOT_FOUND)
     {
-        char confirm;
+        printf("Patient is not in system.\n");
+        return;
+    }
 
-        printf("Patient ID: %d\n", patients[index].patientId);
-        printf("Patient Name: %s\n", patients[index].name);
-        printf("Are you sure you want to discharge this patient? (y/n)\n");
-        scanf("%c", &confirm);
-        clearInputBuffer();
-
-        if(confirm == 'y')
-        {
-            for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
-            {
-                patients[i] = patients[i + 1];
-            }
-            totalPatients--;
-            printf("Patient has been discharged!\n");
-        }
-        else
-        {
-            printf("Patient discharge cancelled.\n");
-        }
+    if(confirmDischarge(index))
+    {
+        removePatientFromSystem(index);
+        printf("Patient has been discharged!\n");
     }
     else
     {
-        printf("Patient is not in system.\n");
+        printf("Patient discharge cancelled.\n");
     }
-
 }
 
-void clearInputBuffer()
+static int getPatientIndexForDischarge()
 {
-    while(getchar() != '\n');
+    int patientId;
+    printf("Enter ID of patient to discharge:\n");
+    scanf("%d", &patientId);
+    clearInputBuffer();
+    return patientExists(patientId);
 }
 
-int patientExists(int id)
+static int confirmDischarge(int patientIndex)
+{
+    char confirm;
+    printf("Patient ID: %d\n", patients[patientIndex].patientId);
+    printf("Patient Name: %s\n", patients[patientIndex].name);
+    printf("Are you sure you want to discharge this patient? (y/n)\n");
+    scanf("%c", &confirm);
+    clearInputBuffer();
+    return confirm == 'y';
+}
+
+static void removePatientFromSystem(int index)
+{
+    for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
+    {
+        patients[i] = patients[i + 1];
+    }
+    totalPatients--;
+}
+
+static int patientExists(int id)
 {
     for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
     {
@@ -205,7 +209,7 @@ int patientExists(int id)
     return PATIENT_NOT_FOUND;
 }
 
-int checkRoomOccupancy(int roomNumber)
+static int checkRoomOccupancy(int roomNumber)
 {
     for(int i = 0; i < MAX_ROOM_NUMBER + 1; i++)
     {
@@ -217,7 +221,7 @@ int checkRoomOccupancy(int roomNumber)
     return -1;
 }
 
-int validatePatientName(char patientName[])
+static int validatePatientName(char patientName[])
 {
     if(strlen(patientName) < MIN_PATIENT_NAME_LENGTH || 
        strlen(patientName) > MAX_PATIENT_NAME_LENGTH)
@@ -229,7 +233,7 @@ int validatePatientName(char patientName[])
     return IS_VALID;
 }
 
-int validatePatientAge(int patientAge)
+static int validatePatientAge(int patientAge)
 {
     if (patientAge < MIN_AGE_YEARS || 
         patientAge > MAX_AGE_YEARS)
@@ -241,7 +245,7 @@ int validatePatientAge(int patientAge)
     return IS_VALID;
 }
 
-int validatePatientDiagnosis(char patientDiagnosis[])
+static int validatePatientDiagnosis(char patientDiagnosis[])
 {
     if(strlen(patientDiagnosis) < MIN_DIAGNOSIS_LENGTH || 
        strlen(patientDiagnosis) > MAX_DIAGNOSIS_LENGTH)
@@ -253,7 +257,7 @@ int validatePatientDiagnosis(char patientDiagnosis[])
     return IS_VALID;
 }
 
-int validateRoomNumber(int roomNumber)
+static int validateRoomNumber(int roomNumber)
 {
     if (roomNumber < MIN_ROOM_NUMBER || 
         roomNumber > MAX_ROOM_NUMBER)
