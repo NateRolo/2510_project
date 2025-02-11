@@ -4,9 +4,8 @@
  * Purpose: This file represents a patient with patient id, name, age, diagonsis, and room number.
  */
 
-
-#ifndef PATIENT_H
-#define PATIENT_H
+#ifndef HOSPITAL_PATIENT_H
+#define HOSPTAL_PATIENT_H
 
 #define MAX_ROOM_NUMBER 50
 #define MIN_ROOM_NUMBER 1
