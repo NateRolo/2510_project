@@ -87,18 +87,14 @@ void addPatientRecord()
     patientIDCounter++;
 
     printf("Patient added successfully!\n");
-    printf("Patient ID: %d\n", newPatient.patientId);
-    printf("Patient Name: %s\n", newPatient.name);
-    printf("Patient Age: %d\n", newPatient.age);
-    printf("Patient Diagnosis: %s\n", newPatient.diagnosis);
-    printf("Patient Room Number: %d\n", newPatient.roomNumber);
+    printPatientInfo(&patients[totalPatients - 1]);
 }
 
 void viewPatientRecords()
 {
     if (totalPatients == 0)
     {
-        printf("No Patients Admitted...");
+        printf("No Patients Admitted...\n");
         return;
     }
 
@@ -107,12 +103,7 @@ void viewPatientRecords()
     {
         if (patients[i].patientId != 0)
         {
-            printf("Patient ID: %d\n", patients[i].patientId);
-            printf("Patient Name: %s\n", patients[i].name);
-            printf("Age: %d\n", patients[i].age);
-            printf("Diagnosis: %s\n", patients[i].diagnosis);
-            printf("Room Number: %d\n", patients[i].roomNumber);
-            printf("---------------------------------------");
+            printPatientInfo(&patients[i]);
         }
     }
 }
@@ -132,12 +123,7 @@ void searchPatientById()
     } 
     else
     {
-        printf("Patient ID: %d\n", patients[index].patientId);
-        printf("Patient Name: %s\n", patients[index].name);
-        printf("Age: %d\n", patients[index].age);
-        printf("Diagnosis: %s\n", patients[index].diagnosis);
-        printf("Room Number: %d\n", patients[index].roomNumber);
-        printf("---------------------------------------\n");
+        printPatientInfo(&patients[index]);
     }
 }
 
@@ -267,4 +253,14 @@ static int validateRoomNumber(int roomNumber)
         return IS_INVALID;
     }
     return IS_VALID;
+}
+
+static void printPatientInfo(const Patient* patient)
+{
+    printf("Patient ID: %d\n", patient->patientId);
+    printf("Patient Name: %s\n", patient->name);
+    printf("Age: %d\n", patient->age);
+    printf("Diagnosis: %s\n", patient->diagnosis);
+    printf("Room Number: %d\n", patient->roomNumber);
+    printf("---------------------------------------\n");
 }
