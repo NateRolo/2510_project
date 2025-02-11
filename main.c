@@ -145,11 +145,11 @@ void addPatientRecord()
     patientIDCounter++;
 
     printf("Patient added successfully!\n");
-    printf("Patient ID: %d\n", patient1.patientId);
-    printf("Patient Name: %s\n", patient1.name);
-    printf("Patient Age: %d\n", patient1.age);
-    printf("Patient Diagnosis: %s\n", patient1.diagnosis);
-    printf("Patient Room Number: %d\n", patient1.roomNumber);
+    printf("Patient ID: %d\n", newPatient.patientId);
+    printf("Patient Name: %s\n", newPatient.name);
+    printf("Patient Age: %d\n", newPatient.age);
+    printf("Patient Diagnosis: %s\n", newPatient.diagnosis);
+    printf("Patient Room Number: %d\n", newPatient.roomNumber);
 }
 
 void viewPatientRecords()
