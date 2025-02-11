@@ -1,8 +1,15 @@
+/*
+ * Author: Arsh M, Nathan O
+ * Date: 2/6/2025
+ * Purpose: This file implements functions for managing patient records in a hospital system.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "patient.h"
 #include "utils.h"
 
+// Function prototypes for internal (static) functions
 static int getPatientName(char patientName[]);
 static int getPatientAge(int *patientAge);
 static int getPatientDiagnosis(char patientDiagnosis[]);
@@ -22,13 +29,23 @@ static int validateRoomNumber(int roomNumber);
 static int patientExists(int id);
 static int checkRoomOccupancy(int roomNumber);
 
+// Array to store patient records
 Patient patients[MAX_PATIENT_CAPACITY];
+
+// Tracks total number of patients in the system
 int totalPatients = IS_EMPTY;
+
+// Counter for assigning unique patient IDs
 int patientIDCounter = DEFAULT_ID;
 
+/*
+ * Function: addPatientRecord
+ * --------------------------
+ * Adds a new patient record to the system after validating input fields.
+ */
 void addPatientRecord()
 {
-    if(totalPatients >= MAX_PATIENT_CAPACITY)
+    if (totalPatients >= MAX_PATIENT_CAPACITY)
     {
         printf("Max patient capacity reached!\n");
         return;
@@ -39,31 +56,32 @@ void addPatientRecord()
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
 
-    if(getPatientName(patientName) == IS_NOT_VALID)
+    // Get and validate patient details
+    if (getPatientName(patientName) == IS_NOT_VALID)
     {
         return;
     }
 
-    if(getPatientAge(&patientAge) == IS_NOT_VALID)
+    if (getPatientAge(&patientAge) == IS_NOT_VALID)
     {
         return;
     }
 
-    if(getPatientDiagnosis(patientDiagnosis) == IS_NOT_VALID)
+    if (getPatientDiagnosis(patientDiagnosis) == IS_NOT_VALID)
     {
         return;
     }
 
-    if(getRoomNumber(&roomNumber) == IS_NOT_VALID)
+    if (getRoomNumber(&roomNumber) == IS_NOT_VALID)
     {
         return;
     }
 
-    Patient newPatient = createNewPatient(patientName,
-                                          patientAge,
-                                          patientDiagnosis,
+    // Create and store new patient record
+    Patient newPatient = createNewPatient(patientName, 
+                                          patientAge, 
+                                          patientDiagnosis, 
                                           roomNumber);
-
     patients[totalPatients] = newPatient;
     totalPatients++;
     patientIDCounter++;
@@ -72,6 +90,11 @@ void addPatientRecord()
     printPatientInfo(&patients[totalPatients - 1]);
 }
 
+/*
+ * Function: viewPatientRecords
+ * ----------------------------
+ * Displays all patient records stored in the system.
+ */
 void viewPatientRecords()
 {
     if (totalPatients == IS_EMPTY)
@@ -80,7 +103,7 @@ void viewPatientRecords()
         return;
     }
 
-    for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
     {
         if (patients[i].patientId != INVALID_ID)
         {
@@ -89,10 +112,14 @@ void viewPatientRecords()
     }
 }
 
+/*
+ * Function: searchPatientById
+ * ---------------------------
+ * Searches for a patient by ID and displays their details if found.
+ */
 void searchPatientById()
 {
-    int id;
-    int index;
+    int id, index;
 
     if (totalPatients == IS_EMPTY)
     {
@@ -103,35 +130,41 @@ void searchPatientById()
     printf("Enter A Patient Id: ");
     scanf("%d", &id);
     clearInputBuffer();
+
     index = patientExists(id);
 
     if (index == PATIENT_NOT_FOUND)
     {
         printf("Patient does not exist!\n");
-    } 
+    }
     else
     {
         printPatientInfo(&patients[index]);
     }
 }
 
+/*
+ * Function: dischargePatient
+ * --------------------------
+ * Removes a patient from the system if they exist and discharge is confirmed.
+ */
 void dischargePatient()
 {
-    if(totalPatients == IS_EMPTY)
+    if (totalPatients == IS_EMPTY)
     {
         printf("No patients to discharge!\n");
         return;
     }
 
     int index = getPatientIndexForDischarge();
-    
-    if(index == PATIENT_NOT_FOUND)
+
+    if (index == PATIENT_NOT_FOUND)
     {
         printf("Patient is not in system.\n");
         return;
     }
 
-    if(confirmDischarge(index))
+    if (confirmDischarge(index))
     {
         removePatientFromSystem(index);
         printf("Patient has been discharged!\n");
@@ -142,45 +175,70 @@ void dischargePatient()
     }
 }
 
+/*
+ * Function: getPatientName
+ * ------------------------
+ * Reads and validates the patient’s name from user input.
+ */
 static int getPatientName(char patientName[])
 {
     printf("Enter Patient Name:\n");
     fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
     patientName[strcspn(patientName, "\n")] = NULL_TERMINATOR;
-    
+
     return validatePatientName(patientName);
 }
 
-static int getPatientAge(int* patientAge)
+/*
+ * Function: getPatientAge
+ * -----------------------
+ * Reads and validates the patient’s age from user input.
+ */
+static int getPatientAge(int *patientAge)
 {
     printf("Enter Patient Age:\n");
     scanf("%d", patientAge);
     clearInputBuffer();
-    
+
     return validatePatientAge(*patientAge);
 }
 
+/*
+ * Function: getPatientDiagnosis
+ * -----------------------------
+ * Reads and validates the patient’s diagnosis from user input.
+ */
 static int getPatientDiagnosis(char patientDiagnosis[])
 {
     printf("Enter Patient Diagnosis:\n");
     fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
     patientDiagnosis[strcspn(patientDiagnosis, "\n")] = NULL_TERMINATOR;
-    
+
     return validatePatientDiagnosis(patientDiagnosis);
 }
 
-static int getRoomNumber(int* roomNumber)
+/*
+ * Function: getRoomNumber
+ * -----------------------
+ * Reads and validates the room number for the patient.
+ */
+static int getRoomNumber(int *roomNumber)
 {
     printf("Enter Patient Room:\n");
     scanf("%d", roomNumber);
     clearInputBuffer();
-    
+
     return validateRoomNumber(*roomNumber);
 }
 
-static Patient createNewPatient(const char patientName[],
+/*
+ * Function: createNewPatient
+ * --------------------------
+ * Creates a new patient record with given details.
+ */
+static Patient createNewPatient(const char patientName[], 
                                 int patientAge,
-                                const char patientDiagnosis[],
+                                const char patientDiagnosis[], 
                                 int roomNumber)
 {
     Patient newPatient;
@@ -192,6 +250,11 @@ static Patient createNewPatient(const char patientName[],
     return newPatient;
 }
 
+/*
+ * Function: getPatientIndexForDischarge
+ * -------------------------------------
+ * Prompts user for a patient ID and returns their index in the system.
+ */
 static int getPatientIndexForDischarge()
 {
     int patientId;
@@ -201,6 +264,11 @@ static int getPatientIndexForDischarge()
     return patientExists(patientId);
 }
 
+/*
+ * Function: confirmDischarge
+ * --------------------------
+ * Asks the user to confirm the discharge of a patient.
+ */
 static int confirmDischarge(int patientIndex)
 {
     char confirm;
@@ -212,15 +280,25 @@ static int confirmDischarge(int patientIndex)
     return confirm == 'y';
 }
 
+/*
+ * Function: removePatientFromSystem
+ * ---------------------------------
+ * Removes a patient from the system by shifting array elements.
+ */
 static void removePatientFromSystem(int index)
 {
-    for(int i = index; i < REMOVE_PATIENT_ARRAY_MAX; i++)
+    for (int i = index; i < REMOVE_PATIENT_ARRAY_MAX; i++)
     {
         patients[i] = patients[i + NEXT_INDEX_OFFSET];
     }
     totalPatients--;
 }
 
+/*
+ * Function: patientExists
+ * -----------------------
+ * Checks if a patient with a given ID exists and returns their index.
+ */
 static int patientExists(int id)
 {
     for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
@@ -233,11 +311,16 @@ static int patientExists(int id)
     return PATIENT_NOT_FOUND;
 }
 
+/*
+ * Function: checkRoomOccupancy
+ * ----------------------------
+ * Checks if a room is currently occupied by any patient.
+ */
 static int checkRoomOccupancy(int roomNumber)
 {
-    for(int i = 0; i <= MAX_ROOM_NUMBER; i++)
+    for (int i = 0; i <= MAX_ROOM_NUMBER; i++)
     {
-        if(patients[i].roomNumber == roomNumber)
+        if (patients[i].roomNumber == roomNumber)
         {
             return i;
         }
@@ -245,55 +328,12 @@ static int checkRoomOccupancy(int roomNumber)
     return -1;
 }
 
-static int validatePatientName(char patientName[])
-{
-    if(strlen(patientName) < MIN_PATIENT_NAME_LENGTH || 
-       strlen(patientName) > MAX_PATIENT_NAME_LENGTH)
-    {
-        printf("Patient name must be between %d and %d characters long.\n", 
-               MIN_PATIENT_NAME_LENGTH, MAX_PATIENT_NAME_LENGTH);
-        return IS_NOT_VALID;
-    }
-    return IS_VALID;
-}
-
-static int validatePatientAge(int patientAge)
-{
-    if (patientAge < MIN_AGE_YEARS || 
-        patientAge > MAX_AGE_YEARS)
-    {
-        printf("Invalid age! Please enter a number between %d and %d.\n", 
-               MIN_AGE_YEARS, MAX_AGE_YEARS);
-        return IS_NOT_VALID;  
-    }
-    return IS_VALID;
-}
-
-static int validatePatientDiagnosis(char patientDiagnosis[])
-{
-    if(strlen(patientDiagnosis) < MIN_DIAGNOSIS_LENGTH || 
-       strlen(patientDiagnosis) > MAX_DIAGNOSIS_LENGTH)
-    {
-        printf("Patient diagnosis must be between %d and %d characters long.\n", 
-               MIN_DIAGNOSIS_LENGTH, MAX_DIAGNOSIS_LENGTH);
-        return IS_NOT_VALID;
-    }
-    return IS_VALID;
-}
-
-static int validateRoomNumber(int roomNumber)
-{
-    if (roomNumber < MIN_ROOM_NUMBER || 
-        roomNumber > MAX_ROOM_NUMBER)
-    {
-        printf("Invalid Room Number: Must be between %d and %d.\n", 
-               MIN_ROOM_NUMBER, MAX_ROOM_NUMBER);
-        return IS_NOT_VALID;
-    }
-    return IS_VALID;
-}
-
-static void printPatientInfo(const Patient* patient)
+/*
+ * Function: printPatientInfo
+ * --------------------------
+ * Displays detailed information about a patient.
+ */
+static void printPatientInfo(const Patient *patient)
 {
     printf("---------------------------------------\n");
     printf("Patient ID: %d\n", patient->patientId);
