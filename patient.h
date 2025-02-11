@@ -49,8 +49,5 @@ void viewPatientRecords();
 void searchPatientById();
 void dischargePatient();
 
-int patientExists(int id);
-int checkRoomOccupancy(int roomNumber);
-int validatePatientName(char patientName[]);
 
 #endif //PATIENT_H

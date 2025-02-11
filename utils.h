@@ -1,7 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+
 void clearInputBuffer();
 
-#endif
+#endif // UTILS_H
     

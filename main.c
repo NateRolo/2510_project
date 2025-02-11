@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "patient.h"
+#include "utils.h"
 
 // constants for menu
 #define ENTER_PATIENT_RECORD 1

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "patient.h": "c"
+        "patient.h": "c",
+        "utils.h": "c"
     }
 }

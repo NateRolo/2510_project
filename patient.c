@@ -3,6 +3,25 @@
 #include "patient.h"
 #include "utils.h"
 
+static int getPatientName(char patientName[]);
+static int getPatientAge(int *patientAge);
+static int getPatientDiagnosis(char patientDiagnosis[]);
+static int getRoomNumber(int *roomNumber);
+static Patient createNewPatient(const char patientName[],
+                                int patientAge,
+                                const char patientDiagnosis[],
+                                int roomNumber);
+static void printPatientInfo(const Patient *patient);
+static int getPatientIndexForDischarge();
+static int confirmDischarge(int patientIndex);
+static void removePatientFromSystem(int index);
+static int validatePatientName(char patientName[]);
+static int validatePatientAge(int patientAge);
+static int validatePatientDiagnosis(char patientDiagnosis[]);
+static int validateRoomNumber(int roomNumber);
+static int patientExists(int id);
+static int checkRoomOccupancy(int roomNumber);
+
 Patient patients[MAX_PATIENT_CAPACITY];
 int totalPatients = IS_EMPTY;
 int patientIDCounter = DEFAULT_ID;
