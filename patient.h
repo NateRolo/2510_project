@@ -31,6 +31,8 @@
 
 #define IS_EMPTY 0
 
+#define DEFAULT_ID 1
+
 // patient struct
 typedef struct
 {

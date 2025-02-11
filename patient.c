@@ -4,8 +4,8 @@
 #include "utils.h"
 
 Patient patients[MAX_PATIENT_CAPACITY];
-int totalPatients = 0;
-int patientIDCounter = 1;
+int totalPatients = IS_EMPTY;
+int patientIDCounter = DEFAULT_ID;
 
 void addPatientRecord()
 {
