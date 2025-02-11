@@ -1,7 +1,8 @@
 /*
  * Author: Arsh M, Nathan O
  * Date: 2/6/2025
- * Purpose: This file represents a patient with patient id, name, age, diagonsis, and room number.
+ * Purpose: This file defines a structure for representing a patient in a hospital system, 
+ *          along with necessary macros and function prototypes for patient management.
  */
 
 #ifndef HOSPITAL_PATIENT_H
@@ -39,21 +40,49 @@
 #define REMOVE_PATIENT_ARRAY_MAX 49
 #define NEXT_INDEX_OFFSET 1
 
-// patient struct
+/*
+ * Struct: Patient
+ * ----------------
+ * Represents a patient in the hospital system, storing basic details
+ * such as ID, name, age, diagnosis, and assigned room number.
+ */
 typedef struct
 {
-    int patientId;
-    char name[MAX_PATIENT_NAME_LENGTH];
-    int age;
-    char diagnosis[MAX_DIAGNOSIS_LENGTH];
-    int roomNumber;
+    int patientId;                           
+    char name[MAX_PATIENT_NAME_LENGTH];      
+    int ageInYears;                                 
+    char diagnosis[MAX_DIAGNOSIS_LENGTH];    
+    int roomNumber;                          
 } Patient;
 
-// Patient management functions
+// Function prototypes for patient management
+
+/*
+ * Function: addPatientRecord
+ * --------------------------
+ * Adds a new patient record to the system.
+ */
 void addPatientRecord();
+
+/*
+ * Function: viewPatientRecords
+ * ----------------------------
+ * Displays all patient records currently stored in the system.
+ */
 void viewPatientRecords();
+
+/*
+ * Function: searchPatientById
+ * ---------------------------
+ * Searches for a patient record using their unique ID.
+ */
 void searchPatientById();
+
+/*
+ * Function: dischargePatient
+ * --------------------------
+ * Removes a patient from the system once they are discharged.
+ */
 void dischargePatient();
 
-
-#endif //PATIENT_H
+#endif // HOSPITAL_PATIENT_H
