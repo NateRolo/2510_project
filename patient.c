@@ -123,10 +123,14 @@ void searchPatientById()
 
     printf("Enter A Patient Id: ");
     scanf("%d", &id);
-
+    clearInputBuffer();
     index = patientExists(id);
 
-    if (index != -1)
+    if (index == PATIENT_NOT_FOUND)
+    {
+        printf("Patient Does Not Exist!\n");
+    } 
+    else
     {
         printf("Patient ID: %d\n", patients[index].patientId);
         printf("Patient Name: %s\n", patients[index].name);
@@ -134,9 +138,6 @@ void searchPatientById()
         printf("Diagnosis: %s\n", patients[index].diagnosis);
         printf("Room Number: %d\n", patients[index].roomNumber);
         printf("---------------------------------------\n");
-    } else
-    {
-        printf("Patient Does Not Exist!\n");
     }
 }
 
@@ -201,8 +202,7 @@ int patientExists(int id)
             return i;
         }
     }
-
-    return -1;
+    return PATIENT_NOT_FOUND;
 }
 
 int checkRoomOccupancy(int roomNumber)
