@@ -86,12 +86,7 @@ void searchPatientById()
     } 
     else
     {
-        printf("Patient ID: %d\n", patients[index].patientId);
-        printf("Patient Name: %s\n", patients[index].name);
-        printf("Age: %d\n", patients[index].age);
-        printf("Diagnosis: %s\n", patients[index].diagnosis);
-        printf("Room Number: %d\n", patients[index].roomNumber);
-        printf("---------------------------------------\n");
+        printPatientInfo(&patients[index]);
     }
 }
 
