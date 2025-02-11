@@ -24,7 +24,7 @@
 #define MIN_AGE_YEARS 0
 #define MAX_AGE_YEARS 120
 
-#define IS_INVALID 0
+#define IS_NOT_VALID 0
 #define IS_VALID 1
 
 #define PATIENT_NOT_FOUND -1

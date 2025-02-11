@@ -39,22 +39,23 @@ void addPatientRecord()
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
 
-    if(getPatientName(patientName) == IS_INVALID)
+    if(getPatientName(patientName) == IS_NOT_VALID)
+    {
+        clearInputBuffer();
+        return;
+    }
+
+    if(getPatientAge(&patientAge) == IS_NOT_VALID)
     {
         return;
     }
 
-    if(getPatientAge(&patientAge) == IS_INVALID)
+    if(getPatientDiagnosis(patientDiagnosis) == IS_NOT_VALID)
     {
         return;
     }
 
-    if(getPatientDiagnosis(patientDiagnosis) == IS_INVALID)
-    {
-        return;
-    }
-
-    if(getRoomNumber(&roomNumber) == IS_INVALID)
+    if(getRoomNumber(&roomNumber) == IS_NOT_VALID)
     {
         return;
     }
@@ -68,7 +69,7 @@ void addPatientRecord()
     totalPatients++;
     patientIDCounter++;
 
-    printf("Patient added successfully!\n");
+    printf("--- Patient Added ---\n");
     printPatientInfo(&patients[totalPatients - 1]);
 }
 
@@ -141,8 +142,8 @@ static int getPatientName(char patientName[])
 {
     printf("Enter patient name:\n");
     fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
-    patientName[strcspn(patientName, "\n")] = '\0';
-    clearInputBuffer();
+    patientName[strcspn(patientName, "\n")] = 0;
+    
     
     return validatePatientName(patientName);
 }
@@ -248,7 +249,7 @@ static int validatePatientName(char patientName[])
     {
         printf("Patient name must be between %d and %d characters long.\n", 
                MIN_PATIENT_NAME_LENGTH, MAX_PATIENT_NAME_LENGTH);
-        return IS_INVALID;
+        return IS_NOT_VALID;
     }
     return IS_VALID;
 }
@@ -260,7 +261,7 @@ static int validatePatientAge(int patientAge)
     {
         printf("Invalid age! Please enter a number between %d and %d.\n", 
                MIN_AGE_YEARS, MAX_AGE_YEARS);
-        return IS_INVALID;  
+        return IS_NOT_VALID;  
     }
     return IS_VALID;
 }
@@ -272,7 +273,7 @@ static int validatePatientDiagnosis(char patientDiagnosis[])
     {
         printf("Patient diagnosis must be between %d and %d characters long.\n", 
                MIN_DIAGNOSIS_LENGTH, MAX_DIAGNOSIS_LENGTH);
-        return IS_INVALID;
+        return IS_NOT_VALID;
     }
     return IS_VALID;
 }
@@ -284,7 +285,7 @@ static int validateRoomNumber(int roomNumber)
     {
         printf("Invalid Room Number: Must be between %d and %d.\n", 
                MIN_ROOM_NUMBER, MAX_ROOM_NUMBER);
-        return IS_INVALID;
+        return IS_NOT_VALID;
     }
     return IS_VALID;
 }
