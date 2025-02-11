@@ -18,4 +18,8 @@ Doctor doctors[] = {
     {30, "Sofia Gomez", 33}
 };
 
+Doctor weeklySchedule[7][3];
+const char* daysOfWeek[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+const char* timeOfDay[] = {"Morning", "Afternoon", "Evening"};
+
 #endif //DOCTOR_H
