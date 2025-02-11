@@ -315,16 +315,3 @@ void menu()
 }
 
 
-
-
-int checkRoomOccupancy(int roomNumber)
-{
-    for(int i = 0; i < MAX_ROOM_NUMBER + 1; i++)
-    {
-        if(patients[i].roomNumber == roomNumber)
-        {
-            return i;
-        }
-    }
-    return -1;
-}
