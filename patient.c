@@ -1,6 +1,6 @@
 /*
  * Author: Arsh M, Nathan O
- * Date: 2/6/2025
+ * Date: Feb 6, 2025
  * Purpose: This file implements functions for managing patient records in a hospital system.
  */
 
