@@ -37,21 +37,7 @@
 
 // function prototypes
 void menu();
-void clearInputBuffer();
-void addPatientRecord();
-void viewPatientRecords();
-void searchPatientById();
 
-int patientExists(int id);
-int checkRoomOccupancy(int roomNumber);
-
-
-// hospital patients
-Patient patients[MAX_PATIENT_CAPACITY];
-int patientRooms[MAX_PATIENT_CAPACITY];
-
-int totalPatients = 0;
-int patientIDCounter = 1;
 
 int main(void)
 {
