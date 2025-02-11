@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "patient.h"
+#include "doctor.h"
 
 // constants for menu
 #define ENTER_PATIENT_RECORD 1
@@ -19,7 +20,6 @@
 #define INVALID_USER_INPUT (-1)
 
 #define MAX_PATIENT_CAPACITY 50
-
 
 #define MAX_ROOM_NUMBER 50
 #define MIN_ROOM_NUMBER 1
@@ -42,10 +42,10 @@ void clearInputBuffer();
 void addPatientRecord();
 void viewPatientRecords();
 void searchPatientById();
+void doctorMenu();
 
 int patientExists(int id);
 int checkRoomOccupancy(int roomNumber);
-
 
 // hospital patients
 Patient patients[MAX_PATIENT_CAPACITY];
@@ -53,7 +53,6 @@ int patientRooms[MAX_PATIENT_CAPACITY];
 
 int totalPatients = 0;
 int patientIDCounter = 1;
-
 
 int main(void)
 {
@@ -183,8 +182,6 @@ void viewPatientRecords()
     }
 }
 
-
-
 void searchPatientById()
 {
     int id, index;
@@ -285,34 +282,73 @@ void menu()
                 // enter patient record function
                 getchar();
                 addPatientRecord();
-            break;
+                break;
             case SEARCH_PATIENT_BY_ID:
                 // search patients function
-                    getchar();
-                    searchPatientById();
-            break;
+                getchar();
+                searchPatientById();
+                break;
             case VIEW_ALL_PATIENTS:
                 getchar();
                 viewPatientRecords();
-
-            break;
+                break;
             case DISCHARGE_PATIENT:
                 clearInputBuffer();
                 dischargePatient();
-            break;
+                break;
             case MANAGE_DOCTOR_SCHEDULE:
-                // manage doctor sched function
-                    puts("manage doctor sched.\n");
-            break;
+                doctorMenu();
+                break;
             case EXIT_PROGRAM:
                 puts("Exiting program, have a nice day!\n");
-            return;
+                return;
             default:
                 printf("Not a valid input, please enter "
                        "one of the options above.\n");
-            userInput = INVALID_USER_INPUT;
+                userInput = INVALID_USER_INPUT;
+        }
+    } while (userInput != EXIT_PROGRAM);
+}
+
+void doctorMenu()
+{
+    int userInput;
+
+    do
+    {
+        userInput = INVALID_USER_INPUT;
+
+        printf("\nDoctor Management System.\n"
+               "Enter one of the following options:\n"
+               "1: Assign Doctor to Shift.\n"
+               "2: Display Full Weekly Schedule.\n"
+               "3: Exit.\n");
+
+        if (scanf("%d", &userInput) != 1)
+        {
+            printf("Invalid input. Please enter a number.\n");
+            clearInputBuffer();
+            continue;
         }
 
+        switch(userInput)
+        {
+            case 1:
+                clearInputBuffer();
+                // Assign Doctors
+                break;
+            case 2:
+                clearInputBuffer();
+                // View Schedule
+                break;
+            case 3:
+                puts("Exiting program, have a nice day!\n");
+                return;
+            default:
+                printf("Not a valid input, please enter "
+                       "one of the options above.\n");
+                userInput = INVALID_USER_INPUT;
+        }
     } while (userInput != EXIT_PROGRAM);
 }
 
