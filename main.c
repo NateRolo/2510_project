@@ -20,8 +20,22 @@
 
 #define MAX_PATIENT_CAPACITY 50
 
+
 #define MAX_ROOM_NUMBER 50
 #define MIN_ROOM_NUMBER 1
+
+#define MIN_PATIENT_NAME_LENGTH 1
+#define MAX_PATIENT_NAME_LENGTH 100
+
+#define MIN_DIAGNOSIS_LENGTH 1
+#define MAX_DIAGNOSIS_LENGTH 255
+
+#define MIN_ROOM_NUMBER 1
+#define MAX_ROOM_NUMBER 50
+
+#define MIN_AGE_YEARS 0
+#define MAX_AGE_YEARS 120
+
 
 // function prototypes
 void menu();
@@ -40,6 +54,7 @@ int main(void)
     return 0;
 }
 
+// add patient record function
 void addPatientRecord()
 {
     if(totalPatients >= MAX_PATIENT_CAPACITY)
@@ -48,63 +63,87 @@ void addPatientRecord()
         return;
     }
 
-    int patientID;
-    char patientName[100];
+    char patientName[MAX_PATIENT_NAME_LENGTH];
     int patientAge;
-    char patientDiagnosis[255];
+    char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
 
+    // get patient name
     printf("Enter patient name:\n");
-    fgets(patientName, 100, stdin);
-    patientName[strcspn(patientName, "\n")] = 0;
+    fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
+    patientName[strcspn(patientName, "\n")] = '\0';
 
-    if(strlen(patientName) == 0)
+    if(strlen(patientName) < MIN_PATIENT_NAME_LENGTH || 
+       strlen(patientName) > MAX_PATIENT_NAME_LENGTH)
     {
-        printf("Patient name cannot be blank!\n");
+        printf("Patient name must be between %d and %d characters long.\n", 
+               MIN_PATIENT_NAME_LENGTH, MAX_PATIENT_NAME_LENGTH);
         return;
     }
 
+    // get patient age
     printf("Enter patient age:\n");
     scanf("%d", &patientAge);
-    if (patientAge <= 0)
+    
+    if (patientAge < MIN_AGE_YEARS || 
+        patientAge > MAX_AGE_YEARS)
     {
-        printf("Invalid age! Please enter a positive number.\n");
+        printf("Invalid age! Please enter a number between %d and %d.\n", 
+               MIN_AGE_YEARS, MAX_AGE_YEARS);
         return;
     }
     clearInputBuffer();
 
-
     printf("Enter patient diagnosis:\n");
-    fgets(patientDiagnosis, 255, stdin);
-    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = 0;
+    fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
+    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = '\0';
 
-    if(strlen(patientDiagnosis) == 0)
+    if(strlen(patientDiagnosis) < MIN_DIAGNOSIS_LENGTH || 
+       strlen(patientDiagnosis) > MAX_DIAGNOSIS_LENGTH)
     {
-        printf("Patient name cannot be blank!\n");
+        printf("Patient diagnosis must be between %d and %d characters long.\n", 
+               MIN_DIAGNOSIS_LENGTH, MAX_DIAGNOSIS_LENGTH);
         return;
     }
 
+    // get patient room number
     printf("Enter patient room:\n");
     scanf("%d", &roomNumber);
 
-    if (roomNumber < MIN_ROOM_NUMBER || roomNumber > MAX_ROOM_NUMBER)
+    if (roomNumber < MIN_ROOM_NUMBER || 
+        roomNumber > MAX_ROOM_NUMBER)
     {
-        printf("Invalid Room Number.\n");
+        printf("Invalid Room Number: Must be between %d and %d.\n", 
+               MIN_ROOM_NUMBER, MAX_ROOM_NUMBER);
         return;
     }
     clearInputBuffer();
 
-    Patient patient1;
+    // create new patient
+    Patient newPatient;
 
-    patient1.patientId = patientIDCounter;
-    strcpy(patient1.name, patientName);
-    patient1.age = patientAge;
-    strcpy(patient1.diagnosis, patientDiagnosis);
-    patient1.roomNumber = roomNumber;
+    // set patient id
+    newPatient.patientId = patientIDCounter;
 
-    patients[totalPatients] = patient1;
+    // set patient name
+    strcpy(newPatient.name, patientName);
+
+    // set patient age
+    newPatient.age = patientAge;
+
+    // set patient diagnosis
+    strcpy(newPatient.diagnosis, patientDiagnosis);
+
+    // set patient room number
+    newPatient.roomNumber = roomNumber;
+
+    // add patient to array
+    patients[totalPatients] = newPatient;
+
+    // increment total patients and patient id counter
     totalPatients++;
     patientIDCounter++;
+
     printf("Patient added successfully!\n");
     printf("Patient ID: %d\n", patient1.patientId);
     printf("Patient Name: %s\n", patient1.name);
