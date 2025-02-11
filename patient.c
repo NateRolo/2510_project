@@ -186,7 +186,7 @@ static Patient createNewPatient(const char patientName[],
     Patient newPatient;
     newPatient.patientId = patientIDCounter;
     strcpy(newPatient.name, patientName);
-    newPatient.age = patientAge;
+    newPatient.ageInYears = patientAge;
     strcpy(newPatient.diagnosis, patientDiagnosis);
     newPatient.roomNumber = roomNumber;
     return newPatient;
@@ -298,7 +298,7 @@ static void printPatientInfo(const Patient* patient)
     printf("---------------------------------------\n");
     printf("Patient ID: %d\n", patient->patientId);
     printf("Patient Name: %s\n", patient->name);
-    printf("Age: %d\n", patient->age);
+    printf("Age: %d\n", patient->ageInYears);
     printf("Diagnosis: %s\n", patient->diagnosis);
     printf("Room Number: %d\n", patient->roomNumber);
     printf("---------------------------------------\n");
