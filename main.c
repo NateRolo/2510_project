@@ -65,7 +65,7 @@ void addPatientRecord()
     // get patient name
     printf("Enter patient name:\n");
     fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
-    patientName[strcspn(patientName, "\n")] = 0;
+    patientName[strcspn(patientName, "\n")] = '\0';
 
     if(strlen(patientName) < MIN_PATIENT_NAME_LENGTH || 
        strlen(patientName) > MAX_PATIENT_NAME_LENGTH)
@@ -90,7 +90,7 @@ void addPatientRecord()
 
     printf("Enter patient diagnosis:\n");
     fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
-    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = 0;
+    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = '\0';
 
     if(strlen(patientDiagnosis) < MIN_DIAGNOSIS_LENGTH || 
        strlen(patientDiagnosis) > MAX_DIAGNOSIS_LENGTH)
