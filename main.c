@@ -47,6 +47,9 @@ void assignDoctor();
 char* getDayOfWeek(int);
 char* getTimeOfDay(int);
 void printFullSchedule();
+int doctorExists(int idIndex);
+int dayExists(int dayIndex);
+int timeOfDayExists(int timeIndex);
 
 int patientExists(int id);
 int checkRoomOccupancy(int roomNumber);
@@ -55,17 +58,9 @@ int checkRoomOccupancy(int roomNumber);
 Patient patients[MAX_PATIENT_CAPACITY];
 int patientRooms[MAX_PATIENT_CAPACITY];
 
-
-// hospital doctors;
-Doctor doctors[] = {
-    {10, "Raymond Redington", 44},
-    {20, "George Washington", 67},
-    {30, "Sofia Gomez", 33}
-};
-
 Doctor weeklySchedule[7][3];
-char* daysOfWeek[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-char* timeOfDay[] = {"Morning", "Afternoon", "Evening"};
+const char* daysOfWeek[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+const char* timeOfDay[] = {"Morning", "Afternoon", "Evening"};
 
 int totalPatients = 0;
 int patientIDCounter = 1;
@@ -374,7 +369,7 @@ void assignDoctor()
     int doctorId = -1;
     int day = -1;
     int time = -1;
-    int proceed = -1;
+    char proceed = 'y';
 
     do {
         printf("Choose A Doctor:\n"
@@ -386,9 +381,10 @@ void assignDoctor()
         {
             printf("Please enter a number.\n");
             clearInputBuffer();
+        } else {
+            doctorId = doctorExists(doctorId);
         }
 
-        // Add code to validate entry
     } while (doctorId == -1);
 
     do {
@@ -405,9 +401,10 @@ void assignDoctor()
         {
             printf("Please enter a number.\n");
             clearInputBuffer();
+        } else {
+            day = dayExists(day);
         }
 
-        // Add a if day != validDay condition, if not make it -1
     } while (day == -1);
 
     do {
@@ -420,19 +417,17 @@ void assignDoctor()
         {
             printf("Please enter a number.\n");
             clearInputBuffer();
+        } else {
+            time = timeOfDayExists(time);
         }
 
-        // Add a if time != validTime condition, if not make it -1
     } while (time == -1);
 
-    if (weeklySchedule[day][time].doctorId != 0) {
-        // Add functionality to check if you want to proceed!!
-        printf("Doctor Assigned. Reassigning in Process!\n");
-    } else {
-        printf("Assigning Doctor!\n");
-    }
+    printf("Assigning Dr.%s for %s %s.\n", doctors[doctorId].name, getDayOfWeek(day), getTimeOfDay(time));
 
-    weeklySchedule[day][time] = doctors[doctorId];
+    if (proceed == 'y') {
+        weeklySchedule[day][time] = doctors[doctorId];
+    }
 }
 
 void printFullSchedule()
@@ -478,6 +473,39 @@ int patientExists(int id)
         }
     }
 
+    return -1;
+}
+
+int doctorExists(int idIndex)
+{
+    if (idIndex >= 0 &&
+        idIndex < 3) {
+        return idIndex;
+    }
+
+    printf("Doctor Doesn't Exist.\n");
+    return -1;
+}
+
+int dayExists(int dayIndex)
+{
+    if (dayIndex >= 0 &&
+        dayIndex < 7) {
+        return dayIndex;
+    }
+
+    printf("Day Doesn't Exist.\n");
+    return -1;
+}
+
+int timeOfDayExists(int timeIndex)
+{
+    if (timeIndex >= 0 &&
+        timeIndex < 3) {
+        return timeIndex;
+    }
+
+    printf("Time Of Day Doesn't Exist.\n");
     return -1;
 }
 
