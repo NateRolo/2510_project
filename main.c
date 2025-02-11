@@ -40,7 +40,7 @@ void addPatientRecord()
 {
     if(totalPatients >= MAX_PATIENT_CAPACITY)
     {
-        printf("Max patient capacity reached!");
+        printf("Max patient capacity reached!\n");
         return;
     }
 
@@ -67,7 +67,7 @@ void addPatientRecord()
         printf("Invalid age! Please enter a positive number.\n");
         return;
     }
-    getchar();
+    clearInputBuffer();
 
 
     printf("Enter patient diagnosis:\n");
@@ -85,10 +85,11 @@ void addPatientRecord()
 
     if (roomNumber <= 0)
     {
-        printf("Invalid Room Number: Negative");
+        printf("Invalid Room Number: Negative\n");
         return;
     }
-    getchar();
+    clearInputBuffer();
+
     Patient patient1;
 
     patient1.patientId = patientIDCounter;
@@ -156,14 +157,44 @@ void searchPatientById()
         printf("Age: %d\n", patients[index].age);
         printf("Diagnosis: %s\n", patients[index].diagnosis);
         printf("Room Number: %d\n", patients[index].roomNumber);
-        printf("---------------------------------------");
+        printf("---------------------------------------\n");
     } else
     {
-        printf("Patient Does Not Exist!");
+        printf("Patient Does Not Exist!\n");
     }
 }
 
+void dischargePatient()
+{
+    if(totalPatients == 0)
+    {
+        printf("No patients to discharge!\n");
+    }
 
+    int index;
+    int patientId;
+
+    printf("Enter ID of patient to discharge:\n");
+    scanf("%d", &patientId);
+    clearInputBuffer();
+
+    index = patientExists(patientId);
+
+    if(index != -1)
+    {
+        for(int i = index; i < MAX_PATIENT_CAPACITY - 1; i++)
+        {
+            patients[i] = patients[i + 1];
+        }
+        totalPatients--;
+        printf("Patient has been discharged!\n");
+    }
+    else
+    {
+        printf("Patient is not in system.\n");
+    }
+
+}
 
 void menu()
 {
@@ -207,15 +238,15 @@ void menu()
 
             break;
             case DISCHARGE_PATIENT:
-                // discharge patient function
-                    puts("discharge patients.\n");
+                clearInputBuffer();
+                dischargePatient();
             break;
             case MANAGE_DOCTOR_SCHEDULE:
                 // manage doctor sched function
                     puts("manage doctor sched.\n");
             break;
             case EXIT_PROGRAM:
-                puts("Exiting program, have a nice day!");
+                puts("Exiting program, have a nice day!\n");
             return;
             default:
                 printf("Not a valid input, please enter "
