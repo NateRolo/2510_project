@@ -227,7 +227,7 @@ void menu()
     {
         userInput = INVALID_USER_INPUT;
 
-        printf("Welcome to the [blank] Hospital Patient Management System.\n"
+        printf("\nWelcome to the [blank] Hospital Patient Management System.\n"
                "Enter one of the following options:\n"
                "1: Enter Patient Record.\n"
                "2: Search Patient by ID.\n"
