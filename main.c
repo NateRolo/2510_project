@@ -54,7 +54,6 @@ int patientRooms[MAX_PATIENT_CAPACITY];
 int totalPatients = 0;
 int patientIDCounter = 1;
 
-
 int main(void)
 {
     menu();

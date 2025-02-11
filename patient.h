@@ -37,6 +37,7 @@ typedef struct
 void addPatientRecord();
 void viewPatientRecords();
 void searchPatientById(int id);
+void dischargePatient();
 
 int patientExists(int id);
 int checkRoomOccupancy(int roomNumber);
