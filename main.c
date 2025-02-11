@@ -43,6 +43,7 @@ void addPatientRecord();
 void viewPatientRecords();
 void searchPatientById();
 void doctorMenu();
+void assignDoctor();
 
 int patientExists(int id);
 int checkRoomOccupancy(int roomNumber);
@@ -348,7 +349,7 @@ void doctorMenu()
         {
             case 1:
                 clearInputBuffer();
-                // Assign Doctors
+                assignDoctor();
                 break;
             case 2:
                 clearInputBuffer();
@@ -363,6 +364,73 @@ void doctorMenu()
                 userInput = INVALID_USER_INPUT;
         }
     } while (userInput != EXIT_PROGRAM);
+}
+
+void assignDoctor()
+{
+    int doctorId = -1;
+    int day = -1;
+    int time = -1;
+    int proceed = -1;
+
+    do {
+        printf("Choose A Doctor:\n"
+               "0: Raymond Redington\n"
+               "1: George Washington\n"
+               "2: Sofia Gomez\n");
+
+        if (scanf("%d", &doctorId) != 1)
+        {
+            printf("Please enter a number.\n");
+            clearInputBuffer();
+        }
+
+        // Add code to validate entry
+    } while (doctorId != -1);
+
+    do {
+        printf("Choose A Day:\n"
+               "0: Monday\n"
+               "1: Tuesday\n"
+               "2: Wednesday\n"
+               "3: Thursday\n"
+               "4: Friday\n"
+               "5: Saturday\n"
+               "6: Sunday\n");
+
+        if (scanf("%d", &day) != 1)
+        {
+            printf("Please enter a number.\n");
+            clearInputBuffer();
+        }
+
+        // Add a if day != validDay condition, if not make it -1
+    } while (day != -1);
+
+    do {
+        printf("Choose A Day:\n"
+               "0: Morning\n"
+               "1: Afternoon\n"
+               "2: Evening\n");
+
+        if (scanf("%d", &time) != 1)
+        {
+            printf("Please enter a number.\n");
+            clearInputBuffer();
+        }
+
+        // Add a if time != validTime condition, if not make it -1
+    } while (time != -1);
+
+    printf("%d\t", doctorId);
+    printf("%d\t", day);
+    printf("%d\n", time);
+
+    if (weeklySchedule[day][time].doctorId != 0) {
+        printf("Doctor Assigned. Reassigning in Process\n");
+    }
+
+    weeklySchedule[day][time] = doctors[doctorId];
 }
 
 void clearInputBuffer()
