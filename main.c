@@ -17,7 +17,8 @@
 #define MANAGE_DOCTOR_SCHEDULE 5
 #define EXIT_PROGRAM 6
 
-#define INVALID_USER_INPUT (-1)
+#define DEFAULT_VALUE (-1)
+#define VALID_INPUT 1
 
 // function prototypes
 void menu();
@@ -34,9 +35,9 @@ void menu()
 
     do
     {
-        userInput = INVALID_USER_INPUT;
+        userInput = DEFAULT_VALUE;
 
-        printf("\nWelcome to the [blank] Hospital Patient Management System.\n"
+        printf("\nWelcome to the BCIT Hospital Patient Management System.\n"
                "Enter one of the following options:\n"
                "1: Enter Patient Record.\n"
                "2: Search Patient by ID.\n"
@@ -45,7 +46,7 @@ void menu()
                "5: Manage Doctor Schedule:\n"
                "6: Exit.\n");
 
-        if (scanf("%d", &userInput) != 1)
+        if (scanf("%d", &userInput) != VALID_INPUT)
         {
             printf("Invalid input. Please enter a number.\n");
             clearInputBuffer();
@@ -56,14 +57,15 @@ void menu()
         {
         case ENTER_PATIENT_RECORD:
             // enter patient record function
-            getchar();
+            clearInputBuffer();
             addPatientRecord();
             break;
         case SEARCH_PATIENT_BY_ID:
+            clearInputBuffer();
             searchPatientById();
             break;
         case VIEW_ALL_PATIENTS:
-            getchar();
+            clearInputBuffer();
             viewPatientRecords();
             break;
         case DISCHARGE_PATIENT:
@@ -80,7 +82,7 @@ void menu()
         default:
             printf("Not a valid input, please enter "
                    "one of the options above.\n");
-            userInput = INVALID_USER_INPUT;
+            userInput = DEFAULT_VALUE;
         }
 
     } while (userInput != EXIT_PROGRAM);
