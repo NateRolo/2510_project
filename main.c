@@ -315,18 +315,7 @@ void menu()
 }
 
 
-int patientExists(int id)
-{
-    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
-    {
-        if (patients[i].patientId == id)
-        {
-            return i;
-        }
-    }
 
-    return -1;
-}
 
 int checkRoomOccupancy(int roomNumber)
 {
