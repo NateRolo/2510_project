@@ -73,7 +73,8 @@ void viewPatientRecords()
 
 void searchPatientById()
 {
-    int id, index;
+    int id;
+    int index;
 
     printf("Enter A Patient Id: ");
     scanf("%d", &id);

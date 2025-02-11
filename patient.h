@@ -46,7 +46,7 @@ typedef struct
 // Patient management functions
 void addPatientRecord();
 void viewPatientRecords();
-void searchPatientById(int id);
+void searchPatientById();
 void dischargePatient();
 
 int patientExists(int id);

@@ -21,7 +21,6 @@
 // function prototypes
 void menu();
 
-
 int main(void)
 {
     menu();
@@ -52,37 +51,34 @@ void menu()
             continue;
         }
 
-        switch(userInput)
+        switch (userInput)
         {
-            case ENTER_PATIENT_RECORD:
-                // enter patient record function
-                getchar();
-                addPatientRecord();
+        case ENTER_PATIENT_RECORD:
+            // enter patient record function
+            getchar();
+            addPatientRecord();
             break;
-            case SEARCH_PATIENT_BY_ID:
-                // search patients function
-                    getchar();
-                    searchPatientById();
+        case SEARCH_PATIENT_BY_ID:
+            searchPatientById();
             break;
-            case VIEW_ALL_PATIENTS:
-                getchar();
-                viewPatientRecords();
-
+        case VIEW_ALL_PATIENTS:
+            getchar();
+            viewPatientRecords();
             break;
-            case DISCHARGE_PATIENT:
-                clearInputBuffer();
-                dischargePatient();
+        case DISCHARGE_PATIENT:
+            clearInputBuffer();
+            dischargePatient();
             break;
-            case MANAGE_DOCTOR_SCHEDULE:
-                // manage doctor sched function
-                    puts("manage doctor sched.\n");
+        case MANAGE_DOCTOR_SCHEDULE:
+            // manage doctor sched function
+            puts("manage doctor sched.\n");
             break;
-            case EXIT_PROGRAM:
-                puts("Exiting program, have a nice day!\n");
+        case EXIT_PROGRAM:
+            puts("Exiting program, have a nice day!\n");
             return;
-            default:
-                printf("Not a valid input, please enter "
-                       "one of the options above.\n");
+        default:
+            printf("Not a valid input, please enter "
+                   "one of the options above.\n");
             userInput = INVALID_USER_INPUT;
         }
 
