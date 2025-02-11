@@ -292,7 +292,7 @@ static int validateRoomNumber(int roomNumber)
 
 static void printPatientInfo(const Patient* patient)
 {
-    printf("--- Patient Record ---\n");
+    printf("---------------------------------------\n");
     printf("Patient ID: %d\n", patient->patientId);
     printf("Patient Name: %s\n", patient->name);
     printf("Age: %d\n", patient->age);
