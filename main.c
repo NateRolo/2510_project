@@ -89,7 +89,7 @@ void addPatientRecord()
 
     if (roomNumber < MIN_ROOM_NUMBER || roomNumber > MAX_ROOM_NUMBER)
     {
-        printf("Invalid Room Number: Negative\n");
+        printf("Invalid Room Number.\n");
         return;
     }
     clearInputBuffer();
@@ -105,8 +105,12 @@ void addPatientRecord()
     patients[totalPatients] = patient1;
     totalPatients++;
     patientIDCounter++;
-    printf("Patient added!");
-
+    printf("Patient added successfully!\n");
+    printf("Patient ID: %d\n", patient1.patientId);
+    printf("Patient Name: %s\n", patient1.name);
+    printf("Patient Age: %d\n", patient1.age);
+    printf("Patient Diagnosis: %s\n", patient1.diagnosis);
+    printf("Patient Room Number: %d\n", patient1.roomNumber);
 }
 
 void viewPatientRecords()
