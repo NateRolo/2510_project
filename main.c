@@ -44,6 +44,9 @@ void viewPatientRecords();
 void searchPatientById();
 void doctorMenu();
 void assignDoctor();
+char* getDayOfWeek(int);
+char* getTimeOfDay(int);
+void printFullSchedule();
 
 int patientExists(int id);
 int checkRoomOccupancy(int roomNumber);
@@ -353,7 +356,7 @@ void doctorMenu()
                 break;
             case 2:
                 clearInputBuffer();
-                // View Schedule
+                printFullSchedule();
                 break;
             case 3:
                 puts("Exiting program, have a nice day!\n");
@@ -386,7 +389,7 @@ void assignDoctor()
         }
 
         // Add code to validate entry
-    } while (doctorId != -1);
+    } while (doctorId == -1);
 
     do {
         printf("Choose A Day:\n"
@@ -405,7 +408,7 @@ void assignDoctor()
         }
 
         // Add a if day != validDay condition, if not make it -1
-    } while (day != -1);
+    } while (day == -1);
 
     do {
         printf("Choose A Day:\n"
@@ -420,17 +423,44 @@ void assignDoctor()
         }
 
         // Add a if time != validTime condition, if not make it -1
-    } while (time != -1);
-
-    printf("%d\t", doctorId);
-    printf("%d\t", day);
-    printf("%d\n", time);
+    } while (time == -1);
 
     if (weeklySchedule[day][time].doctorId != 0) {
-        printf("Doctor Assigned. Reassigning in Process\n");
+        // Add functionality to check if you want to proceed!!
+        printf("Doctor Assigned. Reassigning in Process!\n");
+    } else {
+        printf("Assigning Doctor!\n");
     }
 
     weeklySchedule[day][time] = doctors[doctorId];
+}
+
+void printFullSchedule()
+{
+    for (int i = 0; i < 7; i++) {
+        char* day = getDayOfWeek(i);
+        printf("---%s---\n", day);
+        printf("%-20sAssigned Doctor\n", "Time Of Day"); // Adjust header for 20 spaces
+        for (int j = 0; j < 3; j++) {
+            char* time = getTimeOfDay(j);
+            printf("%-20s", time); // Ensure time takes up 20 spaces
+            if (strlen(weeklySchedule[i][j].name) == 0) {
+                printf("Unassigned!\n"); // Rest of the string will fit here
+            } else {
+                printf("%s\n", weeklySchedule[i][j].name);
+            }
+        }
+    }
+}
+
+char* getDayOfWeek(int index)
+{
+    return daysOfWeek[index];
+}
+
+char* getTimeOfDay(int index)
+{
+    return timeOfDay[index];
 }
 
 void clearInputBuffer()
