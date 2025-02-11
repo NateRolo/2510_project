@@ -15,9 +15,13 @@
 #define DISCHARGE_PATIENT 4
 #define MANAGE_DOCTOR_SCHEDULE 5
 #define EXIT_PROGRAM 6
+
 #define INVALID_USER_INPUT (-1)
 
 #define MAX_PATIENT_CAPACITY 50
+
+#define MAX_ROOM_NUMBER 50
+#define MIN_ROOM_NUMBER 1
 
 // function prototypes
 void menu();
@@ -83,7 +87,7 @@ void addPatientRecord()
     printf("Enter patient room:\n");
     scanf("%d", &roomNumber);
 
-    if (roomNumber <= 0)
+    if (roomNumber < MIN_ROOM_NUMBER || roomNumber > MAX_ROOM_NUMBER)
     {
         printf("Invalid Room Number: Negative\n");
         return;
