@@ -1,41 +1,45 @@
 #include <stdio.h>
 #include <string.h>
 #include "doctor.h"
+#include "utils.h"
 
 #define INVALID_INPUT (-1)
 #define DAYS_IN_WEEK 7
 #define TIMES_OF_DAY 3
 #define DOCTOR_COUNT 3
+#define SUCCESSFUL_READ 1
+#define NAME_LENGTH 100
+#define UNASSIGNED_ID 0
+#define MIN_INDEX 0
+#define YES 'y'
+#define NO 'n'
 
 typedef struct
 {
     int id;
-    char name[100];
+    char name[NAME_LENGTH];
     int age;
 } Doctor;
 
 // Pre-defined array of doctors.
-static const Doctor doctors[] = {
-    {10, "Raymond Redington", 44},
-    {20, "George Washington", 67},
-    {30, "Sofia Gomez", 33}};
+static const Doctor doctors[] = {{10, "Raymond Redington", 44},
+                                 {20, "George Washington", 67},
+                                 {30, "Sofia Gomez", 33}};
 
 // Schedule seperated into morning, afternoon, and evening.
 static Doctor weeklyDoctorSchedule[7][3];
 
-static const char *daysOfWeek[] = {
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday"};
+static const char *daysOfWeek[] = {"Monday",
+                                   "Tuesday",
+                                   "Wednesday",
+                                   "Thursday",
+                                   "Friday",
+                                   "Saturday",
+                                   "Sunday"};
 
-static const char *timesOfDay[] = {
-    "Morning",
-    "Afternoon",
-    "Evening"};
+static const char *timesOfDay[] = {"Morning",
+                                   "Afternoon",
+                                   "Evening"};
 
 // Private function prototypes (not in doctor.h)
 static int chooseDoctor();
@@ -51,7 +55,7 @@ static void clearInputBuffer();
 
 void assignDoctor()
 {
-    char proceed = 'y';
+    char proceed = YES;
 
     const int doctorIndex = chooseDoctor();
     const int dayIndex = chooseDay();
@@ -62,7 +66,7 @@ void assignDoctor()
            daysOfWeek[dayIndex],
            timesOfDay[timeIndex]);
 
-    if (weeklyDoctorSchedule[dayIndex][timeIndex].id != 0)
+    if (weeklyDoctorSchedule[dayIndex][timeIndex].id != UNASSIGNED_ID)
     {
         printf("Another Doctor Already Assigned. Would You Like To Proceed? (y / n)\n");
 
@@ -70,10 +74,10 @@ void assignDoctor()
         {
             scanf(" %c", &proceed);
             clearInputBuffer();
-        } while (proceed != 'y' && proceed != 'n');
+        } while (proceed != YES && proceed != NO);
     }
 
-    if (proceed == 'y')
+    if (proceed == YES)
     {
         weeklyDoctorSchedule[dayIndex][timeIndex] = *doctor;
     }
@@ -172,7 +176,7 @@ static int chooseDay()
 
 static int dayExists(const int dayIndex)
 {
-    if (0 <= dayIndex && dayIndex < DAYS_IN_WEEK)
+    if (MIN_INDEX <= dayIndex && dayIndex < DAYS_IN_WEEK)
     {
         return dayIndex;
     }
@@ -209,7 +213,7 @@ static int chooseTime()
 
 static int timeExists(const int timeIndex)
 {
-    if (0 <= timeIndex && timeIndex < TIMES_OF_DAY)
+    if (MIN_INDEX <= timeIndex && timeIndex < TIMES_OF_DAY)
     {
         return timeIndex;
     }
@@ -229,10 +233,4 @@ static Doctor *getDoctorWithId(const int doctorId)
     }
 
     return nullptr;
-}
-
-static void clearInputBuffer()
-{
-    while (getchar() != '\n')
-        ;
 }
