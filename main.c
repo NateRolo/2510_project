@@ -114,7 +114,7 @@ void menu()
             default:
                 printf("Not a valid input, please enter "
                        "one of the options above.\n");
-                userInput = INVALID_USER_INPUT;
+                userInput = DEFAULT_VALUE;
         }
     } while (userInput != EXIT_PROGRAM);
 }
