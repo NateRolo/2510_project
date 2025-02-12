@@ -232,5 +232,5 @@ static Doctor *getDoctorWithId(const int doctorId)
         }
     }
 
-    return nullptr;
+    return NULL;
 }
