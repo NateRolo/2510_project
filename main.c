@@ -9,6 +9,7 @@
 #include <string.h>
 #include "patient.h"
 #include "utils.h"
+#include "doctor.h"
 
 // Constants representing menu options
 #define ENTER_PATIENT_RECORD 1
@@ -97,5 +98,23 @@ void menu()
             printf("Invalid option. Please enter a number between 1 and 6.\n");
         }
 
+        switch(userInput)
+        {
+            case 1:
+                clearInputBuffer();
+                assignDoctor();
+                break;
+            case 2:
+                clearInputBuffer();
+                printFullSchedule();
+                break;
+            case 3:
+                puts("Exiting program, have a nice day!\n");
+                return;
+            default:
+                printf("Not a valid input, please enter "
+                       "one of the options above.\n");
+                userInput = INVALID_USER_INPUT;
+        }
     } while (userInput != EXIT_PROGRAM);
 }
