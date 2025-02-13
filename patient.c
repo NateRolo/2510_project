@@ -8,11 +8,12 @@
 #include <string.h>
 #include "patient.h"
 #include "utils.h"
+#include <ctype.h>
 
 // Function prototypes for internal (static) functions
-static int getPatientName(char patientName[]);
+static char *getPatientName(char patientName[]);
 static int getPatientAge(int *patientAge);
-static int getPatientDiagnosis(char patientDiagnosis[]);
+static char *getPatientDiagnosis(char patientDiagnosis[]);
 static int getRoomNumber(int *roomNumber);
 static Patient createNewPatient(const char patientName[],
                                 int patientAge,
@@ -56,26 +57,10 @@ void addPatientRecord()
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
 
-    // Get and validate patient details
-    if (getPatientName(patientName) == IS_NOT_VALID)
-    {
-        return;
-    }
-
-    if (getPatientAge(&patientAge) == IS_NOT_VALID)
-    {
-        return;
-    }
-
-    if (getPatientDiagnosis(patientDiagnosis) == IS_NOT_VALID)
-    {
-        return;
-    }
-
-    if (getRoomNumber(&roomNumber) == IS_NOT_VALID)
-    {
-        return;
-    }
+    getPatientName(patientName);
+    getPatientAge(&patientAge);
+    getPatientDiagnosis(patientDiagnosis);
+    getRoomNumber(&roomNumber);
 
     // Create and store new patient record
     Patient newPatient = createNewPatient(patientName, 
@@ -178,43 +163,90 @@ void dischargePatient()
 /*
  * Function: getPatientName
  * ------------------------
- * Reads and validates the patient’s name from user input.
+ * Reads and validates the patient's name from user input.
  */
-static int getPatientName(char patientName[])
+static char *getPatientName(char patientName[])
 {
-    printf("Enter Patient Name:\n");
-    fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
-    patientName[strcspn(patientName, "\n")] = NULL_TERMINATOR;
-
-    return validatePatientName(patientName);
+    int isValid;
+    
+    do
+    {
+        printf("Enter Patient Name:\n");
+        fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
+        patientName[strcspn(patientName, "\n")] = NULL_TERMINATOR;
+        
+        isValid = validatePatientName(patientName);
+        
+        if (isValid == IS_NOT_VALID)
+        {
+            printf("Invalid patient name. Please try again.\n");
+        }
+    }
+    while (isValid == IS_NOT_VALID);
+    
+    return patientName;
 }
 
 /*
  * Function: getPatientAge
  * -----------------------
- * Reads and validates the patient’s age from user input.
+ * Reads and validates the patient's age from user input.
  */
 static int getPatientAge(int *patientAge)
 {
-    printf("Enter Patient Age:\n");
-    scanf("%d", patientAge);
-    clearInputBuffer();
-
-    return validatePatientAge(*patientAge);
+    int isValid;
+    int scanResult;
+    
+    do
+    {
+        printf("Enter Patient Age:\n");
+        scanResult = scanf("%d", patientAge);
+        clearInputBuffer();
+        
+        if (scanResult != SUCCESSFUL_READ)
+        {
+            printf("Invalid input. Please enter a number.\n");
+            isValid = IS_NOT_VALID;
+            continue;
+        }
+        
+        isValid = validatePatientAge(*patientAge);
+        
+        if (isValid == IS_NOT_VALID)
+        {
+            printf("Invalid patient age. Please try again.\n");
+        }
+    }
+    while (isValid == IS_NOT_VALID);
+    
+    return IS_VALID;
 }
 
 /*
  * Function: getPatientDiagnosis
  * -----------------------------
- * Reads and validates the patient’s diagnosis from user input.
+ * Reads and validates the patient's diagnosis from user input.
  */
-static int getPatientDiagnosis(char patientDiagnosis[])
+static char *getPatientDiagnosis(char patientDiagnosis[])
 {
-    printf("Enter Patient Diagnosis:\n");
-    fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
-    patientDiagnosis[strcspn(patientDiagnosis, "\n")] = NULL_TERMINATOR;
-
-    return validatePatientDiagnosis(patientDiagnosis);
+    int isValid;
+    
+    do
+    {
+        printf("Enter Patient Diagnosis:\n");
+        fgets(patientDiagnosis, MAX_DIAGNOSIS_LENGTH, stdin);
+        patientDiagnosis[strcspn(patientDiagnosis, "\n")] = NULL_TERMINATOR;
+        
+        isValid = validatePatientDiagnosis(patientDiagnosis);
+        
+        if (isValid == IS_NOT_VALID)
+        {
+            printf("Invalid diagnosis. Please try again.\n");
+        }
+    }
+    while (isValid == IS_NOT_VALID);
+    
+    return patientDiagnosis;
 }
 
 /*
@@ -224,11 +256,30 @@ static int getPatientDiagnosis(char patientDiagnosis[])
  */
 static int getRoomNumber(int *roomNumber)
 {
-    printf("Enter Patient Room:\n");
-    scanf("%d", roomNumber);
-    clearInputBuffer();
-
-    return validateRoomNumber(*roomNumber);
+    int isValid;
+    
+    do
+    {
+        printf("Enter Patient Room:\n");
+        if (scanf("%d", roomNumber) != SUCCESSFUL_READ)
+        {
+            printf("Invalid input. Please enter a number.\n");
+            clearInputBuffer();
+            isValid = IS_NOT_VALID;
+            continue;
+        }
+        clearInputBuffer();
+        
+        isValid = validateRoomNumber(*roomNumber);
+        
+        if (isValid == IS_NOT_VALID)
+        {
+            printf("Invalid room number. Please try again.\n");
+        }
+    }
+    while (isValid == IS_NOT_VALID);
+    
+    return IS_VALID;
 }
 
 /*
@@ -325,7 +376,7 @@ static int checkRoomOccupancy(int roomNumber)
             return i;
         }
     }
-    return -1;
+    return ROOM_UNOCCUPIED;
 }
 
 /*
@@ -342,4 +393,109 @@ static void printPatientInfo(const Patient *patient)
     printf("Diagnosis: %s\n", patient->diagnosis);
     printf("Room Number: %d\n", patient->roomNumber);
     printf("---------------------------------------\n");
+}
+
+static int validatePatientName(char patientName[])
+{
+    if (patientName == NULL)
+    {
+        return IS_NOT_VALID;
+    }
+
+    if (strlen(patientName) == IS_EMPTY ||
+        strlen(patientName) > MAX_PATIENT_NAME_LENGTH)
+    {
+        return IS_NOT_VALID;
+    }
+
+    int hasLetter;
+
+    hasLetter = NO_LETTERS;
+
+    for (int i = 0; patientName[i] != '\0'; i++)
+    {
+        
+        if (isdigit(patientName[i]))
+        {
+            return IS_NOT_VALID;
+        }
+
+        if (isalpha(patientName[i]))
+        {
+            hasLetter = HAS_LETTERS;
+        }
+    }
+
+    if (hasLetter == NO_LETTERS)
+    {
+        return IS_NOT_VALID;
+    }
+
+    return IS_VALID;
+}
+
+static int validatePatientAge(int patientAge)
+{
+    if(patientAge < MIN_AGE_YEARS || 
+       patientAge > MAX_AGE_YEARS)
+    {
+        return IS_NOT_VALID;
+    }
+
+    return IS_VALID;
+}
+
+static int validatePatientDiagnosis(char patientDiagnosis[])
+{
+    if(patientDiagnosis == NULL)
+    {
+        return IS_NOT_VALID;
+    }
+
+    if(strlen(patientDiagnosis) == IS_EMPTY ||
+       strlen(patientDiagnosis) > MAX_DIAGNOSIS_LENGTH)
+    {
+        return IS_NOT_VALID;
+    }
+
+    int hasLetter;
+
+    hasLetter = NO_LETTERS;
+
+    for(int i = 0; patientDiagnosis[i] != '\0'; i++)
+    {
+        
+        if (isdigit(patientDiagnosis[i]))
+        {
+            return IS_NOT_VALID;
+        }
+
+        if (isalpha(patientDiagnosis[i]))
+        {
+            hasLetter = HAS_LETTERS;
+        }
+    }
+
+    if(hasLetter == NO_LETTERS)
+    {
+        return IS_NOT_VALID;
+    }
+
+    return IS_VALID;
+}
+
+static int validateRoomNumber(int roomNumber)
+{
+    if(roomNumber < MIN_ROOM_NUMBER || 
+       roomNumber > MAX_ROOM_NUMBER)
+    {
+        return IS_NOT_VALID;
+    }
+
+    if(checkRoomOccupancy(roomNumber) != ROOM_UNOCCUPIED)
+    {
+        return IS_NOT_VALID;
+    }
+
+    return IS_VALID;
 }
