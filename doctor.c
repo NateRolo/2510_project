@@ -78,8 +78,7 @@ static int doctorExists(int);
 static int dayExists(int);
 static int timeExists(int);
 
-static Doctor *getDoctorWithId(int);
-static void clearInputBuffer(void);
+static const Doctor *getDoctorWithId(int);
 
 /*
  * Handles the process of assigning a doctor to a specific time slot.
@@ -294,7 +293,7 @@ static int timeExists(const int timeIndex)
  * Retrieves a pointer to a doctor with the specified ID.
  * Returns NULL if no matching doctor is found.
  */
-static Doctor *getDoctorWithId(const int doctorId)
+static const Doctor *getDoctorWithId(const int doctorId)
 {
     for(int i = 0; i < DOCTOR_COUNT; i++)
     {
