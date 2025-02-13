@@ -24,6 +24,7 @@
 
 // Function prototype for the main menu
 void menu();
+void doctorMenu();
 
 /*
  * Function: main
@@ -89,13 +90,42 @@ void menu()
             dischargePatient();
             break;
         case MANAGE_DOCTOR_SCHEDULE:
-            puts("Manage doctor schedule feature coming soon.\n");
+            clearInputBuffer();
+            doctorMenu();
             break;
         case EXIT_PROGRAM:
             puts("Exiting program, have a nice day!\n");
             return;
         default:
             printf("Invalid option. Please enter a number between 1 and 6.\n");
+        }
+    } while (userInput != EXIT_PROGRAM);
+}
+
+/*
+ * Function: doctorMenu
+ * --------------
+ * Displays a menu with options for managing doctor schedules.
+ * Repeats until the user chooses to exit the program.
+ */
+void doctorMenu()
+{
+    int userInput;
+
+    do
+    {
+        userInput = DEFAULT_VALUE;
+
+        printf("\nDoctor Menu\n"
+               "1: Assign Doctor\n"
+               "2: Print Full Schedule\n"
+               "3: Exit\n");
+
+        if(scanf("%d", &userInput) != VALID_INPUT)
+        {
+            printf("Invalid input. Please enter a number.\n");
+            clearInputBuffer();
+            continue;
         }
 
         switch(userInput)
