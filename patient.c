@@ -10,6 +10,56 @@
 #include "utils.h"
 #include <ctype.h>
 
+// Private constants (private to patient.c)
+constexpr static int MAX_PATIENT_CAPACITY = 50;
+
+constexpr static int MAX_ROOM_NUMBER = 50;
+constexpr static int MIN_ROOM_NUMBER = 1;
+
+constexpr static int MIN_PATIENT_NAME_LENGTH = 1;
+constexpr static int MAX_PATIENT_NAME_LENGTH = 100;
+
+constexpr static int MIN_DIAGNOSIS_LENGTH = 1;
+constexpr static int MAX_DIAGNOSIS_LENGTH = 255;
+
+constexpr static int MIN_AGE_YEARS = 0;
+constexpr static int MAX_AGE_YEARS = 120;
+
+constexpr static int PATIENT_NOT_FOUND = -1;
+
+constexpr static int DEFAULT_ID = 1;
+constexpr static int INVALID_ID = 0;
+
+constexpr static int NULL_TERMINATOR = 0;
+
+constexpr static int REMOVE_PATIENT_ARRAY_MAX = 49;
+constexpr static int NEXT_INDEX_OFFSET = 1;
+
+constexpr static int ROOM_UNOCCUPIED = -1;
+
+constexpr static int NUMBER_ZERO = 0;
+constexpr static int NUMBER_NINE = 9;
+
+constexpr static int NO_LETTERS = 0;
+constexpr static int HAS_LETTERS = 1;
+
+constexpr static int IS_EMPTY = 0;
+
+/*
+ * Struct: Patient
+ * ----------------
+ * Represents a patient in the hospital system, storing basic details
+ * such as ID, name, age, diagnosis, and assigned room number.
+ */
+typedef struct
+{
+    int patientId;
+    char name[MAX_PATIENT_NAME_LENGTH];
+    int ageInYears;
+    char diagnosis[MAX_DIAGNOSIS_LENGTH];
+    int roomNumber;
+} Patient;
+
 // Function prototypes for internal (static) functions
 static char *getPatientName(char patientName[]);
 static int getPatientAge(int *patientAge);
