@@ -1,6 +1,6 @@
 /*
  * Author: Arsh M, Nathan O
- * Date: 2/6/2025
+ * Date: Feb 6, 2025
  * Purpose: This file defines a structure for representing a patient in a hospital system, 
  *          along with necessary macros and function prototypes for patient management.
  */
