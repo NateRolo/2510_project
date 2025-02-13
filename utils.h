@@ -1,8 +1,8 @@
 /*
- * File: utils.h
- * -------------
- * This header file provides utility functions for input handling.
- */
+ * Author: Arsh M, Nathan O
+ * Date: Feb 11, 2025
+ * Purpose: Utility functions for general use across the hospital management system.
+*/
 
 #ifndef UTILS_H
 #define UTILS_H

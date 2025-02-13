@@ -1,10 +1,14 @@
+/*
+ * Author: Arsh M, Nathan O
+ * Date: Feb 12, 2025
+ * Purpose: This file contains the definition of the doctor scheduling system.
+ *          It provides functionality for assigning doctors to specific time slots
+ *          and displaying the complete weekly schedule.
+ */
+
 #ifndef DOCTOR_H
 #define DOCTOR_H
 
-/*
- * Constants used throughout the doctor scheduling system.
- * Defines values for input validation, scheduling dimensions, and status codes.
- */
 #define INVALID_INPUT (-1)
 #define DAYS_IN_WEEK 7
 #define TIMES_OF_DAY 3
