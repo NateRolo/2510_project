@@ -11,22 +11,23 @@
 #include <string.h>
 #include "utils.h"
 
-// Private constants (private to doctor.c)
-static constexpr int INVALID_INPUT = -1;
-static constexpr int DAYS_IN_WEEK = 7;
-static constexpr int TIMES_OF_DAY = 3;
-static constexpr int DOCTOR_COUNT = 3;
-static constexpr int NAME_LENGTH = 100;
-static constexpr int UNASSIGNED_ID = 0;
-static constexpr int MIN_INDEX = 0;
+#define NAME_LENGTH 100
+#define DAYS_IN_WEEK 7
+#define TIMES_OF_DAY 3
 
-static constexpr int NO_DOCTOR = 0;
-static constexpr int RAYMOND_ID = 10;
-static constexpr int GEORGE_ID = 20;
-static constexpr int SOFIA_ID = 30;
-static constexpr int RAYMOND_AGE = 44;
-static constexpr int GEORGE_AGE = 67;
-static constexpr int SOFIA_AGE = 33;
+#define NO_DOCTOR 0
+#define RAYMOND_ID 10
+#define GEORGE_ID 20
+#define SOFIA_ID 30
+#define RAYMOND_AGE 44
+#define GEORGE_AGE 67
+#define SOFIA_AGE 33
+
+// Private constants (private to doctor.c)
+static const int INVALID_INPUT = -1;
+static const int DOCTOR_COUNT = 3;
+static const int UNASSIGNED_ID = 0;
+static const int MIN_INDEX = 0;
 
 /*
  * Structure representing a doctor in the system.
