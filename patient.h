@@ -25,12 +25,7 @@
 #define MIN_AGE_YEARS 0
 #define MAX_AGE_YEARS 120
 
-#define IS_NOT_VALID 0
-#define IS_VALID 1
-
 #define PATIENT_NOT_FOUND -1
-
-#define IS_EMPTY 0
 
 #define DEFAULT_ID 1
 #define INVALID_ID 0
@@ -39,6 +34,16 @@
 
 #define REMOVE_PATIENT_ARRAY_MAX 49
 #define NEXT_INDEX_OFFSET 1
+
+#define ROOM_UNOCCUPIED -1
+
+#define NUMBER_ZERO 0
+#define NUMBER_NINE 9
+
+#define NO_LETTERS 0
+#define HAS_LETTERS 1
+
+#define IS_EMPTY 0
 
 /*
  * Struct: Patient
