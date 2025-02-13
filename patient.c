@@ -30,13 +30,8 @@ static int validateRoomNumber(int roomNumber);
 static int patientExists(int id);
 static int checkRoomOccupancy(int roomNumber);
 
-// Array to store patient records
 Patient patients[MAX_PATIENT_CAPACITY];
-
-// Tracks total number of patients in the system
 int totalPatients = IS_EMPTY;
-
-// Counter for assigning unique patient IDs
 int patientIDCounter = DEFAULT_ID;
 
 /*
