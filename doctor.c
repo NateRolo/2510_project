@@ -27,6 +27,15 @@
 #define NO 'n'
 #define NO_DOCTOR 0
 
+#define RAYMOND_ID 10
+#define GEORGE_ID 20
+#define SOFIA_ID 30
+
+#define RAYMOND_AGE 44
+#define GEORGE_AGE 67
+#define SOFIA_AGE 33
+
+
 /*
  * Structure representing a doctor in the system.
  * Contains basic identifying information and personal details.
@@ -39,9 +48,9 @@ typedef struct
 } Doctor;
 
 /* Pre-defined array of available doctors in the system */
-static const Doctor doctors[] = { { 10, "Raymond Redington", 44 },
-                                  { 20, "George Washington", 67 },
-                                  { 30, "Sofia Gomez", 33 } };
+static const Doctor doctors[] = { { RAYMOND_ID, "Raymond Redington", RAYMOND_AGE },
+                                  { GEORGE_ID, "George Washington", GEORGE_AGE },
+                                  { SOFIA_ID, "Sofia Gomez", SOFIA_AGE } };
 
 /* Weekly schedule matrix organized by day and time slot */
 static Doctor weeklyDoctorSchedule[DAYS_IN_WEEK][TIMES_OF_DAY];
