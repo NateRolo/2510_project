@@ -148,7 +148,7 @@ static int chooseDoctor()
     {
         printf("Enter Doctor Id: ");
 
-        if(scanf("%d", &doctorId) != 1)
+        if(scanf("%d", &doctorId) != SUCCESSFUL_READ)
         {
             printf("Invalid Input.\n");
             clearInputBuffer();
@@ -202,7 +202,7 @@ static int chooseDay()
                "5: Saturday\n"
                "6: Sunday\n");
 
-        if(scanf(" %d", &dayIndex) != 1)
+        if(scanf(" %d", &dayIndex) != SUCCESSFUL_READ)
         {
             printf("Invalid Input.\n");
             clearInputBuffer();
@@ -249,7 +249,7 @@ static int chooseTime()
                "1: Afternoon\n"
                "2: Evening\n");
 
-        if(scanf("%d", &timeIndex) != 1)
+        if(scanf("%d", &timeIndex) != SUCCESSFUL_READ)
         {
             printf("Invalid Input.\n");
             clearInputBuffer();
