@@ -396,7 +396,7 @@ static void removePatientFromSystem(int index)
  */
 static int patientExists(int id)
 {
-    for (int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    for (int i = 1; i < MAX_PATIENT_CAPACITY; i++)
     {
         if (patients[i].patientId == id)
         {
