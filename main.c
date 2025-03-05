@@ -7,9 +7,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "patient.h"
+#include "patient_management.h"
 #include "utils.h"
+#include "doctor_schedule.h"
 #include "doctor_data.h"
+#include "patient_data.h"
 
 // Constants representing menu options
 #define ENTER_PATIENT_RECORD 1
@@ -34,6 +36,11 @@ void doctorMenu();
  */
 int main(void)
 {
+    // Initialize systems
+    initializePatientSystem();
+    initializeDoctors();
+    initializeSchedule();
+    
     menu();
     return 0;
 }
