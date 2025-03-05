@@ -4,9 +4,9 @@
  * Purpose: This file contains the implementation of the doctor scheduling system.
  */
 
+#include "schedule.h"
 #include <stdio.h>
 #include <string.h>
-#include "schedule.h"
 #include "doctor.h"
 #include "utils.h"
 
@@ -18,7 +18,7 @@
 // Private constants
 static const int INVALID_INPUT = -1;
 static const int UNASSIGNED_ID = 0;
-static const int MIN_INDEX = 0;
+static const int MIN_INDEX     = 0;
 
 /* Weekly schedule matrix organized by day and time slot */
 static Doctor weeklyDoctorSchedule[DAYS_IN_WEEK][TIMES_OF_DAY];
@@ -44,7 +44,7 @@ void initializeSchedule(void)
     {
         for(int time = 0; time < TIMES_OF_DAY; time++)
         {
-            weeklyDoctorSchedule[day][time] = (Doctor){ UNASSIGNED_ID, "", 0 };
+            weeklyDoctorSchedule[day][time] = (Doctor) { UNASSIGNED_ID, "", 0 };
         }
     }
 }
@@ -58,10 +58,10 @@ void assignDoctor(void)
 {
     char proceed = YES;
 
-    const int     doctorId   = chooseDoctor();
-    const int     dayIndex   = chooseDay();
-    const int     timeIndex  = chooseTime();
-    const Doctor *doctor     = getDoctorWithId(doctorId);
+    const int     doctorId  = chooseDoctor();
+    const int     dayIndex  = chooseDay();
+    const int     timeIndex = chooseTime();
+    const Doctor *doctor    = getDoctorWithId(doctorId);
 
     printf("Assigning Dr.%s for %s %s.\n", doctor->name, daysOfWeek[dayIndex], timesOfDay[timeIndex]);
 
