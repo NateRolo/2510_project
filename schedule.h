@@ -1,16 +1,33 @@
 /*
- * Author: Nathan Oloresisimo
+ * Author: Arsh M, Nathan O
  * Date: 2/13/2025
- * Purpose:
+ * Purpose: This file contains the definition of the doctor scheduling system.
+ *          It provides functionality for assigning doctors to specific time slots
+ *          and displaying the complete weekly schedule.
  */
 
-#ifndef MANAGE_DOCTOR_H
-#define MANAGE_DOCTOR_H
+#ifndef SHCEDULE_H
+#define SCHEDULE_H
 
-#define RAYMOND_ID 10
-#define GEORGE_ID 20
-#define SOFIA_ID 30
-#define RAYMOND_AGE 44
-#define GEORGE_AGE 67
-#define SOFIA_AGE 33
-#endif //MANAGE_DOCTOR_H
+/*
+ * Function: initializeSchedule
+ * ----------------------------
+ * Initializes the weekly schedule with empty slots
+ */
+void initializeSchedule(void);
+
+/*
+ * Function: assignDoctor
+ * ----------------------------
+ * Assigns a doctor to work at a time during the week
+ */
+void assignDoctor(void);
+
+/*
+ * Function: printFullSchedule
+ * ----------------------------
+ * Displays the full doctor schedule with days, times, and assigned doctors
+ */
+void printFullSchedule(void);
+
+#endif // SCHEDULE_H
