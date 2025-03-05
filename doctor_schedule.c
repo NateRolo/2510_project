@@ -4,10 +4,10 @@
  * Purpose: This file contains the implementation of the doctor scheduling system.
  */
 
-#include "schedule.h"
+#include "doctor_schedule.h"
 #include <stdio.h>
 #include <string.h>
-#include "doctor.h"
+#include "doctor_data.h"
 #include "utils.h"
 
 #define DAYS_IN_WEEK 7

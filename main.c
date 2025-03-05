@@ -9,7 +9,7 @@
 #include <string.h>
 #include "patient.h"
 #include "utils.h"
-#include "doctor.h"
+#include "doctor_data.h"
 
 // Constants representing menu options
 #define ENTER_PATIENT_RECORD 1

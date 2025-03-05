@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "doctor.h"
+#include "doctor_data.h"
 #include "utils.h"
 
 // Doctor ages
