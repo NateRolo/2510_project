@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "patient_management.h"
 #include "utils.h"
 #include "doctor_schedule.h"
@@ -40,8 +41,9 @@ int main(void)
     initializePatientSystem();
     initializeDoctors();
     initializeSchedule();
-    
+
     menu();
+
     return 0;
 }
 
@@ -102,6 +104,7 @@ void menu()
             break;
         case EXIT_PROGRAM:
             puts("Exiting program, have a nice day!\n");
+            clearMemory();
             return;
         default:
             printf("Invalid option. Please enter a number between 1 and 6.\n");
@@ -146,7 +149,7 @@ void doctorMenu()
                 printFullSchedule();
                 break;
             case 3:
-                puts("Exiting program, have a nice day!\n");
+                puts("Exiting doctor menu...\n");
                 return;
             default:
                 printf("Not a valid input, please enter "
