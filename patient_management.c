@@ -184,10 +184,6 @@ void dischargePatient(void)
 
 void clearMemory()
 {
-//    for(int i = 0; i < currentPatientCapacity; i++)
-//	{
-//    	free(patients[i]);
-//    }
     free(patients);
     puts("Memory freed");
 }
@@ -343,14 +339,28 @@ static int confirmDischarge(int patientIndex)
 
 /*
  * Removes a patient from the system by shifting array elements.
+ * Also handles memory reallocation when capacity can be reduced.
  */
 static void removePatientFromSystem(int index)
 {
-    for(int i = index; i < REMOVE_PATIENT_ARRAY_MAX; i++)
+    // Shift elements to remove the patient
+    for(int i = index; i < totalPatients - 1; i++)
     {
-        patients[i] = patients[i + NEXT_INDEX_OFFSET];
+        patients[i] = patients[i + 1];
     }
     totalPatients--;
+
+    if (totalPatients > 0 && totalPatients < (currentPatientCapacity / 2) && currentPatientCapacity > 1)
+    {
+        int newCapacity = currentPatientCapacity / 2;
+        Patient *temp = realloc(patients, sizeof(Patient) * newCapacity);
+        
+        if (temp != NULL)
+        {
+            patients = temp;
+            currentPatientCapacity = newCapacity;
+        }
+    }
 }
 
 /*
