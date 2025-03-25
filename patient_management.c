@@ -7,11 +7,12 @@
 #include "patient_management.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "patient_data.h"
 #include "utils.h"
 
 // Private constants
-#define MAX_PATIENT_CAPACITY 50
+#define INITIAL_CAPACITY 1
 #define IS_EMPTY 0
 #define DEFAULT_ID 1
 
@@ -22,9 +23,10 @@ static const int NEXT_INDEX_OFFSET        = 1;
 static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
-static Patient patients[MAX_PATIENT_CAPACITY];
+static Patient *patients;
 static int     totalPatients    = IS_EMPTY;
 static int     patientIDCounter = DEFAULT_ID;
+static int	   currentPatientCapacity = INITIAL_CAPACITY;
 
 // Function prototypes for internal helper functions
 static char *getPatientName(char patientName[]);
@@ -41,17 +43,25 @@ static int   patientExists(int id);
  */
 void initializePatientSystem(void)
 {
-    for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    patients = malloc(sizeof(Patient) * INITIAL_CAPACITY);
+
+    if(patients == NULL)
     {
-        patients[i].patientId    = INVALID_ID;
+		free(patients);
+        exit(EXIT_FAILURE);
+    }
+
+    for(int i = 0; i < INITIAL_CAPACITY ; i++)
+    {
+        patients[i]. patientId    = INVALID_ID;
         patients[i].name[0]      = '\0';
         patients[i].ageInYears   = 0;
         patients[i].diagnosis[0] = '\0';
         patients[i].roomNumber   = 0;
     }
-
     totalPatients    = IS_EMPTY;
     patientIDCounter = DEFAULT_ID;
+    currentPatientCapacity = INITIAL_CAPACITY;
 }
 
 /*
@@ -59,10 +69,16 @@ void initializePatientSystem(void)
  */
 void addPatientRecord(void)
 {
-    if(totalPatients >= MAX_PATIENT_CAPACITY)
+    if(totalPatients >= currentPatientCapacity)
     {
-        printf("Max patient capacity reached!\n");
-        return;
+		Patient *temp = realloc(patients, sizeof(Patient) * (currentPatientCapacity + 1));
+		if(temp == NULL)
+        {
+            free(patients);
+            exit(EXIT_FAILURE);
+        }
+        patients = temp;
+        currentPatientCapacity++;
     }
 
     char patientName[MAX_PATIENT_NAME_LENGTH];
@@ -82,7 +98,7 @@ void addPatientRecord(void)
     patientIDCounter++;
 
     printf("--- Patient Added ---\n");
-    printPatient(&patients[totalPatients - 1]);
+    printPatient(patients[totalPatients - 1]);
 }
 
 /*
@@ -96,11 +112,11 @@ void viewPatientRecords(void)
         return;
     }
 
-    for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    for(int i = 0; i < currentPatientCapacity ; i++)
     {
         if(patients[i].patientId != INVALID_ID)
         {
-            printPatient(&patients[i]);
+            printPatient(patients[i]);
         }
     }
 }
@@ -130,13 +146,15 @@ void searchPatientById(void)
     }
     else
     {
-        printPatient(&patients[index]);
+        printPatient(patients[index]);
     }
 }
 
 /*
  * Removes a patient from the system if they exist and discharge is confirmed.
  */
+
+
 void dischargePatient(void)
 {
     if(totalPatients == IS_EMPTY)
@@ -164,6 +182,12 @@ void dischargePatient(void)
     }
 }
 
+void clearMemory()
+{
+    free(patients);
+    puts("Memory freed");
+}
+
 /*
  * Reads and validates the patient's name from user input.
  */
@@ -174,7 +198,7 @@ static char *getPatientName(char patientName[])
     do
     {
         printf("Enter Patient Name:\n");
-        fgets(patientName, MAX_PATIENT_NAME_LENGTH, stdin);
+        fgets(patientName, 101, stdin);
         patientName[strcspn(patientName, "\n")] = '\0';
 
         isValid = validatePatientName(patientName);
@@ -276,7 +300,7 @@ static int getRoomNumber(int *roomNumber)
         }
 
         // Then check if the room is already occupied
-        if(isRoomOccupied(*roomNumber, patients, MAX_PATIENT_CAPACITY) != ROOM_UNOCCUPIED)
+        if(isRoomOccupied(*roomNumber, patients, currentPatientCapacity ) != ROOM_UNOCCUPIED)
         {
             printf("Room already occupied. Please choose another room.\n");
             isValid = IS_NOT_VALID;
@@ -315,14 +339,28 @@ static int confirmDischarge(int patientIndex)
 
 /*
  * Removes a patient from the system by shifting array elements.
+ * Also handles memory reallocation when capacity can be reduced.
  */
 static void removePatientFromSystem(int index)
 {
-    for(int i = index; i < REMOVE_PATIENT_ARRAY_MAX; i++)
+    // Shift elements to remove the patient
+    for(int i = index; i < totalPatients - 1; i++)
     {
-        patients[i] = patients[i + NEXT_INDEX_OFFSET];
+        patients[i] = patients[i + 1];
     }
     totalPatients--;
+
+    if (totalPatients > 0 && totalPatients < (currentPatientCapacity / 2) && currentPatientCapacity > 1)
+    {
+        int newCapacity = currentPatientCapacity / 2;
+        Patient *temp = realloc(patients, sizeof(Patient) * newCapacity);
+        
+        if (temp != NULL)
+        {
+            patients = temp;
+            currentPatientCapacity = newCapacity;
+        }
+    }
 }
 
 /*
@@ -330,7 +368,7 @@ static void removePatientFromSystem(int index)
  */
 static int patientExists(int id)
 {
-    for(int i = 0; i < MAX_PATIENT_CAPACITY; i++)
+    for(int i = 0; i < currentPatientCapacity ; i++)
     {
         if(patients[i].patientId == id)
         {
@@ -339,3 +377,6 @@ static int patientExists(int id)
     }
     return PATIENT_NOT_FOUND;
 }
+
+
+

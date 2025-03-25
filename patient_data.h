@@ -95,7 +95,7 @@ int validateRoomNumber(int roomNumber);
  * 
  * patient: Pointer to the patient to display
  */
-void printPatient(const Patient *patient);
+void printPatient(const Patient patient);
 
 /*
  * Function: isRoomOccupied

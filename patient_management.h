@@ -42,4 +42,6 @@ void searchPatientById(void);
  */
 void dischargePatient(void);
 
+void clearMemory();
+
 #endif // PATIENT_MANAGEMENT_H 

@@ -29,9 +29,9 @@ static const int HAS_LETTERS = 1;
 /*
  * Creates a new patient record with the given details.
  */
-Patient createPatient(const char patientName[], 
+Patient createPatient(const char patientName[],
                       int patientAge,
-                      const char patientDiagnosis[], 
+                      const char patientDiagnosis[],
                       int roomNumber,
                       int patientId)
 {
@@ -59,6 +59,7 @@ int validatePatientName(char patientName[])
     {
         return IS_NOT_VALID;
     }
+
 
     int hasLetter = NO_LETTERS;
 
@@ -154,14 +155,14 @@ int validateRoomNumber(int roomNumber)
 /*
  * Displays detailed information about a patient.
  */
-void printPatient(const Patient *patient)
+void printPatient(const Patient patient)
 {
     printf("---------------------------------------\n");
-    printf("Patient ID: %d\n", patient->patientId);
-    printf("Patient Name: %s\n", patient->name);
-    printf("Age: %d\n", patient->ageInYears);
-    printf("Diagnosis: %s\n", patient->diagnosis);
-    printf("Room Number: %d\n", patient->roomNumber);
+    printf("Patient ID: %d\n", patient.patientId);
+    printf("Patient Name: %s\n", patient.name);
+    printf("Age: %d\n", patient.ageInYears);
+    printf("Diagnosis: %s\n", patient.diagnosis);
+    printf("Room Number: %d\n", patient.roomNumber);
     printf("---------------------------------------\n");
 }
 
