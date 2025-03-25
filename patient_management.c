@@ -154,7 +154,7 @@ void searchPatientById(void)
  * Removes a patient from the system if they exist and discharge is confirmed.
  */
 
-// after discharge, check to see if we need to reallocate memory to reduce size of array.
+
 void dischargePatient(void)
 {
     if(totalPatients == IS_EMPTY)
