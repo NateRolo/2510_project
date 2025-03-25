@@ -14,6 +14,8 @@
  */
 void initializePatientSystem(void);
 
+void initializePatientSystemDefault(void);
+
 /*
  * Function: addPatientRecord
  * --------------------------
