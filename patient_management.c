@@ -42,6 +42,7 @@ static void  updatePatientsFile(void);
 
 /*
  * Initializes the patient management system.
+ * Attempts to load patient data from patients.dat file.
  */
 void initializePatientSystem(void)
 {
@@ -106,6 +107,10 @@ void initializePatientSystem(void)
     }
 }
 
+/*
+ * Initializes the patient management system with default settings.
+ * Called when patients.dat cannot be read or is empty.
+ */
 void initializePatientSystemDefault(void)
 {
     patients = malloc(sizeof(Patient) * INITIAL_CAPACITY);
@@ -222,8 +227,6 @@ void searchPatientById(void)
 /*
  * Removes a patient from the system if they exist and discharge is confirmed.
  */
-
-
 void dischargePatient(void)
 {
     if(totalPatients == IS_EMPTY)
@@ -251,6 +254,9 @@ void dischargePatient(void)
     }
 }
 
+/*
+ * Frees allocated memory for patient data.
+ */
 void clearMemory()
 {
     free(patients);
@@ -454,6 +460,10 @@ static void removePatientFromSystem(int index)
     updatePatientsFile();
 }
 
+/**
+ * Rewrites the patients.dat file with current patient data.
+ * Opens file in write binary mode and writes all active patient records.
+ */
 static void updatePatientsFile(void)
 {
     FILE *pPatients = fopen("patients.dat", "wb");
@@ -488,6 +498,10 @@ static int patientExists(int id)
     return PATIENT_NOT_FOUND;
 }
 
+/**
+ * Appends a single patient record to the patients.dat file.
+ * Opens file in append binary mode, writes patient data, and handles errors.
+ */
 static void writePatientToFile(Patient newPatient)
 {
     FILE *pPatients = fopen("patients.dat", "ab");
