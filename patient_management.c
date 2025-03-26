@@ -38,6 +38,7 @@ static int   confirmDischarge(int patientIndex);
 static void  removePatientFromSystem(int index);
 static int   patientExists(int id);
 static void  writePatientToFile(Patient newPatient);
+static void  updatePatientsFile(void);
 
 /*
  * Initializes the patient management system.
@@ -82,7 +83,7 @@ void initializePatientSystem(void)
             return;
         }
 
-        totalPatients = read;
+        totalPatients          = read;
         currentPatientCapacity = count;
 
         patientIDCounter = DEFAULT_ID;
@@ -103,8 +104,6 @@ void initializePatientSystem(void)
         puts("\nUnable to read patients.dat. Patients initialized with default settings.");
         initializePatientSystemDefault();
     }
-
-    
 }
 
 void initializePatientSystemDefault(void)
@@ -182,7 +181,7 @@ void viewPatientRecords(void)
         return;
     }
 
-    for(int i = 0; i < currentPatientCapacity; i++)
+    for(int i = 0; i < totalPatients; i++)
     {
         if(patients[i].patientId != INVALID_ID)
         {
@@ -414,11 +413,30 @@ static int confirmDischarge(int patientIndex)
  */
 static void removePatientFromSystem(int index)
 {
-    // Shift elements to remove the patient
-    for(int i = index; i < totalPatients - 1; i++)
+    // Mark the discharged patient slot as invalid
+    patients[index].patientId = INVALID_ID;
+
+    // Compact the array by shifting valid patients
+    for(int i = 0; i < totalPatients - 1; i++)
     {
-        patients[i] = patients[i + 1];
+        if(patients[i].patientId == INVALID_ID)
+        {
+            // Find next valid patient
+            int j = i + 1;
+            while(j < totalPatients && patients[j].patientId == INVALID_ID)
+            {
+                j++;
+            }
+
+            // If found a valid patient, move them to current position
+            if(j < totalPatients)
+            {
+                patients[i]           = patients[j];
+                patients[j].patientId = INVALID_ID;
+            }
+        }
     }
+    
     totalPatients--;
 
     if(totalPatients > 0 && totalPatients < (currentPatientCapacity / 2) && currentPatientCapacity > 1)
@@ -432,6 +450,27 @@ static void removePatientFromSystem(int index)
             currentPatientCapacity = newCapacity;
         }
     }
+
+    updatePatientsFile();
+}
+
+static void updatePatientsFile(void)
+{
+    FILE *pPatients = fopen("patients.dat", "wb");
+
+    if(pPatients == NULL)
+    {
+        perror("Patients.dat not found, patient not deleted from file.");
+        fclose(pPatients);
+    }
+
+    for(int i = 0; i < totalPatients; i++)
+    {
+        fwrite(&patients[i], sizeof(Patient), 1, pPatients);
+    }
+
+    puts("patients.dat updated.");
+    fclose(pPatients);
 }
 
 /*
