@@ -34,11 +34,43 @@ static int chooseDay(void);
 static int chooseTime(void);
 static int dayExists(int);
 static int timeExists(int);
+static void writeScheduleToFile(void);
+static void updateScheduleFile(void);
 
 /*
- * Initializes the weekly schedule with empty slots
+ * Initializes the weekly schedule from file or with default values
  */
 void initializeSchedule(void)
+{
+    FILE *pSchedule = fopen("schedule.dat", "rb");
+
+    if(pSchedule != NULL)
+    {
+        size_t read = fread(weeklyDoctorSchedule, sizeof(Doctor), 
+                           DAYS_IN_WEEK * TIMES_OF_DAY, pSchedule);
+
+        if(read != DAYS_IN_WEEK * TIMES_OF_DAY)
+        {
+            fclose(pSchedule);
+            puts("\nError reading from schedule.dat. Initializing with default settings.");
+            initializeScheduleDefault();
+            return;
+        }
+
+        fclose(pSchedule);
+        puts("\nSchedule successfully loaded from file.");
+    }
+    else
+    {
+        puts("\nUnable to read schedule.dat. Schedule initialized with default settings.");
+        initializeScheduleDefault();
+    }
+}
+
+/*
+ * Initializes the schedule with empty slots
+ */
+void initializeScheduleDefault(void)
 {
     for(int day = 0; day < DAYS_IN_WEEK; day++)
     {
@@ -47,6 +79,37 @@ void initializeSchedule(void)
             weeklyDoctorSchedule[day][time] = (Doctor) { UNASSIGNED_ID, "", 0 };
         }
     }
+    
+    // Create initial schedule file
+    writeScheduleToFile();
+}
+
+/*
+ * Updates the schedule file with current assignments
+ */
+static void writeScheduleToFile(void)
+{
+    FILE *pSchedule = fopen("schedule.dat", "wb");
+    
+    if(pSchedule == NULL)
+    {
+        puts("\nUnable to create schedule.dat.");
+        return;
+    }
+
+    size_t written = fwrite(weeklyDoctorSchedule, sizeof(Doctor), 
+                           DAYS_IN_WEEK * TIMES_OF_DAY, pSchedule);
+    
+    if(written == DAYS_IN_WEEK * TIMES_OF_DAY)
+    {
+        puts("\nSchedule successfully saved to file.");
+    }
+    else
+    {
+        puts("\nError saving schedule to file.");
+    }
+    
+    fclose(pSchedule);
 }
 
 /*
@@ -80,6 +143,7 @@ void assignDoctor(void)
     if(proceed == YES)
     {
         weeklyDoctorSchedule[dayIndex][timeIndex] = *doctor;
+        writeScheduleToFile();  // Update file after assignment
     }
 }
 

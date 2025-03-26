@@ -6,26 +6,33 @@
  *          and displaying the complete weekly schedule.
  */
 
-#ifndef SHCEDULE_H
+#ifndef SCHEDULE_H
 #define SCHEDULE_H
 
 /*
  * Function: initializeSchedule
  * ----------------------------
- * Initializes the weekly schedule with empty slots
+ * Initializes the weekly schedule from file or with empty slots if file doesn't exist
  */
 void initializeSchedule(void);
 
 /*
+ * Function: initializeScheduleDefault
+ * ----------------------------------
+ * Initializes the weekly schedule with empty slots (used when file reading fails)
+ */
+void initializeScheduleDefault(void);
+
+/*
  * Function: assignDoctor
- * ----------------------------
- * Assigns a doctor to work at a time during the week
+ * ---------------------
+ * Assigns a doctor to work at a time during the week and updates the schedule file
  */
 void assignDoctor(void);
 
 /*
  * Function: printFullSchedule
- * ----------------------------
+ * --------------------------
  * Displays the full doctor schedule with days, times, and assigned doctors
  */
 void printFullSchedule(void);
