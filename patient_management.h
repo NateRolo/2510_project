@@ -10,10 +10,17 @@
 /*
  * Function: initializePatientSystem
  * --------------------------------
- * Initializes the patient management system.
+ * Initializes the patient management system by attempting to load existing patient records
+ * from patients.dat. 
  */
 void initializePatientSystem(void);
 
+/*
+ * Function: initializePatientSystemDefault
+ * ----------------------------------------
+ * Initializes the patient management system with default settings.
+ * This function can be used when no custom configuration is needed.
+ */
 void initializePatientSystemDefault(void);
 
 /*
