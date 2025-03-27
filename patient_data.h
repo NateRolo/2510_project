@@ -23,7 +23,6 @@ typedef struct
     int ageInYears;
     char diagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
-    struct Patient *nextPatient;
 } Patient;
 
 /*
