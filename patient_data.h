@@ -23,6 +23,7 @@ typedef struct
     int ageInYears;
     char diagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
+    struct Patient *nextPatient;
 } Patient;
 
 /*
@@ -42,7 +43,8 @@ Patient createPatient(const char patientName[],
                       int patientAge,
                       const char patientDiagnosis[], 
                       int roomNumber,
-                      int patientId);
+                      int patientId,
+                      struct Patient *nextPatient);
 
 /*
  * Function: validatePatientName
