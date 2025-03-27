@@ -42,8 +42,7 @@ Patient createPatient(const char patientName[],
                       int patientAge,
                       const char patientDiagnosis[], 
                       int roomNumber,
-                      int patientId,
-                      struct Patient *nextPatient);
+                      int patientId);
 
 /*
  * Function: validatePatientName

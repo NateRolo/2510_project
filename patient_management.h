@@ -6,6 +6,13 @@
 
 #ifndef PATIENT_MANAGEMENT_H
 #define PATIENT_MANAGEMENT_H
+#include "patient_data.h"
+
+struct Node
+{
+    Patient data;
+    struct Node *nextNode;
+};
 
 /*
  * Function: initializePatientSystem
@@ -52,5 +59,9 @@ void searchPatientById(void);
 void dischargePatient(void);
 
 void clearMemory();
+
+struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
+
+void printList(struct Node* head);
 
 #endif // PATIENT_MANAGEMENT_H 

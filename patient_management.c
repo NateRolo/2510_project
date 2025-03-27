@@ -23,10 +23,11 @@ static const int NEXT_INDEX_OFFSET        = 1;
 static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
-static Patient *patients;
-static int      totalPatients          = IS_EMPTY;
-static int      patientIDCounter       = DEFAULT_ID;
-static int      currentPatientCapacity = INITIAL_CAPACITY;
+static Patient     *patients;
+static struct Node *patientList            = NULL;
+static int          totalPatients          = IS_EMPTY;
+static int          patientIDCounter       = DEFAULT_ID;
+static int          currentPatientCapacity = INITIAL_CAPACITY;
 
 // Function prototypes for internal helper functions
 static char *getPatientName(char patientName[]);
@@ -64,46 +65,69 @@ void initializePatientSystem(void)
             return;
         }
 
-        patients = malloc(sizeof(Patient) * count);
-
-        if(patients == NULL)
+        // read from file and populate to linked list
+        Patient tempPatient;
+        while(fread(&tempPatient, sizeof(Patient), 1, pPatients) == 1)
         {
-            free(patients);
-            fclose(pPatients);
-            exit(EXIT_FAILURE);
+            patientList = insertPatientAtEndOfList(patientList, tempPatient);
+            totalPatients++;
         }
 
-        size_t read = fread(patients, sizeof(Patient), count, pPatients);
+        // patients = malloc(sizeof(Patient) * count);
 
-        if(read != count)
-        {
-            fclose(pPatients);
-            free(patients);
-            puts("\nError reading from patients.dat. Initializing with default settings.");
-            initializePatientSystemDefault();
-            return;
-        }
+        // if(patients == NULL)
+        // {
+        //     free(patients);
+        //     fclose(pPatients);
+        //     exit(EXIT_FAILURE);
+        // }
 
-        totalPatients          = read;
+        // size_t read = fread(patients, sizeof(Patient), count, pPatients);
+
+        // printf("%d", read);
+        // if(read != count)
+        // {
+        //     fclose(pPatients);
+        //     free(patients);
+        //     puts("\nError reading from patients.dat. Initializing with default settings.");
+        //     initializePatientSystemDefault();
+        //     return;
+        // }
+
+        // totalPatients          = read;
         currentPatientCapacity = count;
 
-        patientIDCounter = DEFAULT_ID;
-        for(size_t i = 0; i < count; i++)
-        {
-            if(patients[i].patientId >= patientIDCounter)
-            {
-                patientIDCounter = patients[i].patientId + 1;
-            }
-        }
+        patientIDCounter = count + 1;
+        // for(size_t i = 0; i < count; i++)
+        // {
+        //     if(patients[i].patientId >= patientIDCounter)
+        //     {
+        //         patientIDCounter = patients[i].patientId + 1;
+        //     }
+        // }
 
         fclose(pPatients);
+
+
         puts("\nPatients successfully loaded from file.");
+
+        printList(patientList);
     }
     else
     {
         fclose(pPatients);
         puts("\nUnable to read patients.dat. Patients initialized with default settings.");
         initializePatientSystemDefault();
+    }
+}
+
+void printList(struct Node *head)
+{
+    struct Node *current = head;
+    while(current)
+    {
+        printf("%d\n%s\n", current->data.patientId, current->data.name);
+        current = current->nextNode;
     }
 }
 
@@ -164,6 +188,7 @@ void addPatientRecord(void)
 
     // Create and store new patient record
     Patient newPatient      = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
+    patientList             = insertPatientAtEndOfList(patientList, newPatient);
     patients[totalPatients] = newPatient;
     totalPatients++;
     patientIDCounter++;
@@ -174,6 +199,34 @@ void addPatientRecord(void)
     printPatient(patients[totalPatients - 1]);
 }
 
+struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
+{
+    struct Node *newNode = malloc(sizeof(struct Node));
+    if(newNode == NULL)
+    {
+        free(newNode);
+        return NULL;
+    }
+
+    newNode->data     = data;
+    newNode->nextNode = NULL;
+
+    if(head == NULL)
+    {
+        puts("No previous patients, patient added at start of list");
+        return newNode;
+    }
+
+    struct Node *current = head;
+    while(current->nextNode != NULL)
+    {
+        current = current->nextNode;
+    }
+    current->nextNode = newNode;
+
+    puts("Patient inserted at end of list.");
+    return head;
+}
 
 /*
  * Displays all patient records stored in the system.
@@ -442,7 +495,7 @@ static void removePatientFromSystem(int index)
             }
         }
     }
-    
+
     totalPatients--;
 
     if(totalPatients > 0 && totalPatients < (currentPatientCapacity / 2) && currentPatientCapacity > 1)
