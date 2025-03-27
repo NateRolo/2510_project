@@ -24,7 +24,7 @@ static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
 static Patient     *patients;
-static struct Node *patientList            = NULL;
+static struct Node *patientHead            = NULL;
 static int          totalPatients          = IS_EMPTY;
 static int          patientIDCounter       = DEFAULT_ID;
 static int          currentPatientCapacity = INITIAL_CAPACITY;
@@ -69,7 +69,7 @@ void initializePatientSystem(void)
         Patient tempPatient;
         while(fread(&tempPatient, sizeof(Patient), 1, pPatients) == 1)
         {
-            patientList = insertPatientAtEndOfList(patientList, tempPatient);
+            patientHead = insertPatientAtEndOfList(patientHead, tempPatient);
             totalPatients++;
         }
 
@@ -111,7 +111,7 @@ void initializePatientSystem(void)
 
         puts("\nPatients successfully loaded from file.");
 
-        printList(patientList);
+        printList(patientHead);
     }
     else
     {
@@ -188,7 +188,7 @@ void addPatientRecord(void)
 
     // Create and store new patient record
     Patient newPatient      = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
-    patientList             = insertPatientAtEndOfList(patientList, newPatient);
+    patientHead             = insertPatientAtEndOfList(patientHead, newPatient);
     patients[totalPatients] = newPatient;
     totalPatients++;
     patientIDCounter++;
@@ -221,6 +221,7 @@ struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
     while(current->nextNode != NULL)
     {
         current = current->nextNode;
+        
     }
     current->nextNode = newNode;
 
@@ -233,18 +234,17 @@ struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
  */
 void viewPatientRecords(void)
 {
-    if(totalPatients == IS_EMPTY)
+    if(patientHead == NULL)
     {
-        printf("No Patients Admitted...\n");
+        puts("No patients admitted!");
         return;
     }
 
-    for(int i = 0; i < totalPatients; i++)
+    struct Node *current = patientHead;
+    while(current->nextNode != NULL)
     {
-        if(patients[i].patientId != INVALID_ID)
-        {
-            printPatient(patients[i]);
-        }
+        printPatient(current->data);
+        current = current->nextNode;
     }
 }
 
