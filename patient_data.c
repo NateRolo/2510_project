@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "patient_data.h"
 #include "utils.h"
 
@@ -41,6 +42,7 @@ Patient createPatient(const char patientName[],
     newPatient.ageInYears = patientAge;
     strcpy(newPatient.diagnosis, patientDiagnosis);
     newPatient.roomNumber = roomNumber;
+    newPatient.admissionDate = time(NULL);
     return newPatient;
 }
 
@@ -163,6 +165,7 @@ void printPatient(const Patient patient)
     printf("Age: %d\n", patient.ageInYears);
     printf("Diagnosis: %s\n", patient.diagnosis);
     printf("Room Number: %d\n", patient.roomNumber);
+    printf("Time Admitted: %s", ctime(&patient.admissionDate));
     printf("---------------------------------------\n");
 }
 

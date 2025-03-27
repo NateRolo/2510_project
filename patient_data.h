@@ -4,7 +4,6 @@
  * Purpose: This file defines the patient data structure and functions for
  *          creating, validating, and displaying patient information.
  */
-
 #ifndef PATIENT_DATA_H
 #define PATIENT_DATA_H
 
@@ -23,6 +22,7 @@ typedef struct
     int ageInYears;
     char diagnosis[MAX_DIAGNOSIS_LENGTH];
     int roomNumber;
+    time_t admissionDate;
 } Patient;
 
 /*
