@@ -147,6 +147,7 @@ void addPatientRecord(void)
     printPatient(newPatient);
 }
 
+
 /*
  * Displays all patient records stored in the system.
  */
