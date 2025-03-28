@@ -169,17 +169,3 @@ void printPatient(const Patient patient)
     printf("---------------------------------------\n");
 }
 
-/*
- * Checks if a room is currently occupied.
- */
-int isRoomOccupied(int roomNumber, const Patient patients[], int maxPatients)
-{
-    for (int i = 0; i < maxPatients; i++)
-    {
-        if (patients[i].patientId != 0 && patients[i].roomNumber == roomNumber)
-        {
-            return i;
-        }
-    }
-    return -1;
-}

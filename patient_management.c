@@ -23,22 +23,24 @@ static const int NEXT_INDEX_OFFSET        = 1;
 static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
-static Patient *patients;
-static int      totalPatients          = IS_EMPTY;
-static int      patientIDCounter       = DEFAULT_ID;
-static int      currentPatientCapacity = INITIAL_CAPACITY;
+static struct Node *patientHead      = NULL;
+static int          totalPatients    = IS_EMPTY;
+static int          patientIDCounter = DEFAULT_ID;
 
 // Function prototypes for internal helper functions
-static char *getPatientName(char patientName[]);
-static int   getPatientAge(int *patientAge);
-static char *getPatientDiagnosis(char patientDiagnosis[]);
-static int   getRoomNumber(int *roomNumber);
-static int   getPatientIndexForDischarge(void);
-static int   confirmDischarge(int patientIndex);
-static void  removePatientFromSystem(int index);
-static int   patientExists(int id);
-static void  writePatientToFile(Patient newPatient);
-static void  updatePatientsFile(void);
+static char        *getPatientName(char patientName[]);
+static int          getPatientAge(int *patientAge);
+static char        *getPatientDiagnosis(char patientDiagnosis[]);
+static int          getRoomNumber(int *roomNumber);
+static Patient     *getPatientToDischarge(void);
+static int          confirmDischarge(Patient *patient);
+static void         removePatientFromSystem(Patient *patient);
+static Patient     *getPatientFromList(int id);
+static void         writePatientToFile(Patient newPatient);
+static void         updatePatientsFile(void);
+static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
+static int          isRoomOccupiedInList(int roomNumber, struct Node *head);
+static int          computeNextPatientId(void);
 
 /*
  * Initializes the patient management system.
@@ -64,46 +66,44 @@ void initializePatientSystem(void)
             return;
         }
 
-        patients = malloc(sizeof(Patient) * count);
-
-        if(patients == NULL)
+        // read from file and populate to linked list
+        Patient tempPatient;
+        while(fread(&tempPatient, sizeof(Patient), 1, pPatients) == 1)
         {
-            free(patients);
-            fclose(pPatients);
-            exit(EXIT_FAILURE);
-        }
-
-        size_t read = fread(patients, sizeof(Patient), count, pPatients);
-
-        if(read != count)
-        {
-            fclose(pPatients);
-            free(patients);
-            puts("\nError reading from patients.dat. Initializing with default settings.");
-            initializePatientSystemDefault();
-            return;
-        }
-
-        totalPatients          = read;
-        currentPatientCapacity = count;
-
-        patientIDCounter = DEFAULT_ID;
-        for(size_t i = 0; i < count; i++)
-        {
-            if(patients[i].patientId >= patientIDCounter)
+            patientHead = insertPatientAtEndOfList(patientHead, tempPatient);
+            if(patientHead == NULL)
             {
-                patientIDCounter = patients[i].patientId + 1;
+                puts("Unable to populate linked list with data from patients.dat, patients"
+                     " initialized with default settings.");
+                initializePatientSystemDefault();
+                return;
             }
+            totalPatients++;
         }
 
+        patientIDCounter = computeNextPatientId();
         fclose(pPatients);
         puts("\nPatients successfully loaded from file.");
+        printList(patientHead);
     }
     else
     {
-        fclose(pPatients);
         puts("\nUnable to read patients.dat. Patients initialized with default settings.");
         initializePatientSystemDefault();
+    }
+}
+
+/*
+ * Iterates through the patient records stored in the linked list starting from the given head node
+ * and prints out each patient's details.
+ */
+void printList(struct Node *head)
+{
+    struct Node *current = head;
+    while(current)
+    {
+        printf("%d\n%s\n", current->data.patientId, current->data.name);
+        current = current->nextNode;
     }
 }
 
@@ -113,25 +113,10 @@ void initializePatientSystem(void)
  */
 void initializePatientSystemDefault(void)
 {
-    patients = malloc(sizeof(Patient) * INITIAL_CAPACITY);
-
-    if(patients == NULL)
-    {
-        free(patients);
-        exit(EXIT_FAILURE);
-    }
-
-    for(int i = 0; i < INITIAL_CAPACITY; i++)
-    {
-        patients[i].patientId    = INVALID_ID;
-        patients[i].name[0]      = '\0';
-        patients[i].ageInYears   = 0;
-        patients[i].diagnosis[0] = '\0';
-        patients[i].roomNumber   = 0;
-    }
-    totalPatients          = IS_EMPTY;
-    patientIDCounter       = DEFAULT_ID;
-    currentPatientCapacity = INITIAL_CAPACITY;
+    patientHead      = NULL;
+    totalPatients    = IS_EMPTY;
+    patientIDCounter = DEFAULT_ID;
+    puts("Patient system initialized with default settings using linked list.");
 }
 
 
@@ -140,18 +125,6 @@ void initializePatientSystemDefault(void)
  */
 void addPatientRecord(void)
 {
-    if(totalPatients >= currentPatientCapacity)
-    {
-        Patient *temp = realloc(patients, sizeof(Patient) * (currentPatientCapacity + 1));
-        if(temp == NULL)
-        {
-            free(patients);
-            exit(EXIT_FAILURE);
-        }
-        patients = temp;
-        currentPatientCapacity++;
-    }
-
     char patientName[MAX_PATIENT_NAME_LENGTH];
     int  patientAge;
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
@@ -163,15 +136,15 @@ void addPatientRecord(void)
     getRoomNumber(&roomNumber);
 
     // Create and store new patient record
-    Patient newPatient      = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
-    patients[totalPatients] = newPatient;
+    Patient newPatient = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
+    patientHead        = insertPatientAtEndOfList(patientHead, newPatient);
     totalPatients++;
     patientIDCounter++;
 
     writePatientToFile(newPatient);
 
     printf("--- Patient Added ---\n");
-    printPatient(patients[totalPatients - 1]);
+    printPatient(newPatient);
 }
 
 
@@ -180,18 +153,17 @@ void addPatientRecord(void)
  */
 void viewPatientRecords(void)
 {
-    if(totalPatients == IS_EMPTY)
+    if(patientHead == NULL)
     {
-        printf("No Patients Admitted...\n");
+        puts("No patients admitted!");
         return;
     }
 
-    for(int i = 0; i < totalPatients; i++)
+    struct Node *current = patientHead;
+    while(current != NULL)
     {
-        if(patients[i].patientId != INVALID_ID)
-        {
-            printPatient(patients[i]);
-        }
+        printPatient(current->data);
+        current = current->nextNode;
     }
 }
 
@@ -202,9 +174,9 @@ void searchPatientById(void)
 {
     int id, index;
 
-    if(totalPatients == IS_EMPTY)
+    if(patientHead == NULL)
     {
-        printf("No Patients Admitted...\n");
+        puts("No patients admitted!");
         return;
     }
 
@@ -212,16 +184,18 @@ void searchPatientById(void)
     scanf("%d", &id);
     clearInputBuffer();
 
-    index = patientExists(id);
+    struct Node *current = patientHead;
+    while(current != NULL)
+    {
+        if(current->data.patientId == id)
+        {
+            printPatient(current->data);
+            return;
+        }
+        current = current->nextNode;
+    }
 
-    if(index == PATIENT_NOT_FOUND)
-    {
-        printf("Patient does not exist!\n");
-    }
-    else
-    {
-        printPatient(patients[index]);
-    }
+    puts("Patient doesn't exist!");
 }
 
 /*
@@ -229,23 +203,23 @@ void searchPatientById(void)
  */
 void dischargePatient(void)
 {
-    if(totalPatients == IS_EMPTY)
+    if(patientHead == NULL)
     {
-        printf("No patients to discharge!\n");
+        puts("No patients to discharge!");
+        return; // Add return here
+    }
+
+    Patient *patientToDischarge = getPatientToDischarge();
+
+    if(patientToDischarge == NULL)
+    {
+        puts("Patient not found!");
         return;
     }
 
-    int index = getPatientIndexForDischarge();
-
-    if(index == PATIENT_NOT_FOUND)
+    if(confirmDischarge(patientToDischarge))
     {
-        printf("Patient is not in system.\n");
-        return;
-    }
-
-    if(confirmDischarge(index))
-    {
-        removePatientFromSystem(index);
+        removePatientFromSystem(patientToDischarge);
         printf("Patient has been discharged!\n");
     }
     else
@@ -259,7 +233,14 @@ void dischargePatient(void)
  */
 void clearMemory()
 {
-    free(patients);
+    struct Node *current = patientHead;
+    while(current != NULL)
+    {
+        struct Node *next = current->nextNode;
+        free(current);
+        current = next;
+    }
+    patientHead = NULL;
     puts("Memory freed");
 }
 
@@ -375,8 +356,8 @@ static int getRoomNumber(int *roomNumber)
             continue;
         }
 
-        // Then check if the room is already occupied
-        if(isRoomOccupied(*roomNumber, patients, currentPatientCapacity) != ROOM_UNOCCUPIED)
+        // Check if the room is already occupied by traversing the linked list.
+        if(isRoomOccupiedInList(*roomNumber, patientHead) != ROOM_UNOCCUPIED)
         {
             printf("Room already occupied. Please choose another room.\n");
             isValid = IS_NOT_VALID;
@@ -390,75 +371,72 @@ static int getRoomNumber(int *roomNumber)
 /*
  * Prompts user for a patient ID and returns their index in the system.
  */
-static int getPatientIndexForDischarge(void)
+static Patient *getPatientToDischarge(void)
 {
     int patientId;
     printf("Enter ID of patient to discharge:\n");
     scanf("%d", &patientId);
     clearInputBuffer();
-    return patientExists(patientId);
+    return getPatientFromList(patientId);
 }
 
 /*
  * Asks the user to confirm the discharge of a patient.
  */
-static int confirmDischarge(int patientIndex)
+static int confirmDischarge(Patient *patient)
 {
     char confirm;
-    printf("Patient ID: %d\n", patients[patientIndex].patientId);
-    printf("Patient Name: %s\n", patients[patientIndex].name);
+    printf("Patient ID: %d\n", patient->patientId);
+    printf("Patient Name: %s\n", patient->name);
     printf("Are you sure you want to discharge this patient? (y/n)\n");
-    scanf("%c", &confirm);
+    scanf(" %c", &confirm);
     clearInputBuffer();
     return confirm == 'y';
 }
 
 /*
- * Removes a patient from the system by shifting array elements.
- * Also handles memory reallocation when capacity can be reduced.
+ * Removes a patient from the system by unlinking the corresponding node from the linked list.
  */
-static void removePatientFromSystem(int index)
+static void removePatientFromSystem(Patient *patient)
 {
-    // Mark the discharged patient slot as invalid
-    patients[index].patientId = INVALID_ID;
-
-    // Compact the array by shifting valid patients
-    for(int i = 0; i < totalPatients - 1; i++)
+    if(patientHead == NULL || patient == NULL)
     {
-        if(patients[i].patientId == INVALID_ID)
-        {
-            // Find next valid patient
-            int j = i + 1;
-            while(j < totalPatients && patients[j].patientId == INVALID_ID)
-            {
-                j++;
-            }
-
-            // If found a valid patient, move them to current position
-            if(j < totalPatients)
-            {
-                patients[i]           = patients[j];
-                patients[j].patientId = INVALID_ID;
-            }
-        }
+        return;
     }
-    
+
+    struct Node *current  = patientHead;
+    struct Node *prevNode = NULL;
+
+    if(current != NULL && current->data.patientId == patient->patientId)
+    {
+        patientHead = current->nextNode;
+        free(current);
+        totalPatients--;
+        updatePatientsFile();
+        return;
+    }
+
+    // Search for the patient to remove
+    while(current != NULL && current->data.patientId != patient->patientId)
+    {
+        prevNode = current;
+        current  = current->nextNode;
+    }
+
+    // If patient was not found
+    if(current == NULL)
+    {
+        return;
+    }
+
+    // Unlink the node and free memory
+    prevNode->nextNode = current->nextNode;
+    free(current);
     totalPatients--;
-
-    if(totalPatients > 0 && totalPatients < (currentPatientCapacity / 2) && currentPatientCapacity > 1)
-    {
-        int      newCapacity = currentPatientCapacity / 2;
-        Patient *temp        = realloc(patients, sizeof(Patient) * newCapacity);
-
-        if(temp != NULL)
-        {
-            patients               = temp;
-            currentPatientCapacity = newCapacity;
-        }
-    }
 
     updatePatientsFile();
 }
+
 
 /**
  * Rewrites the patients.dat file with current patient data.
@@ -471,12 +449,19 @@ static void updatePatientsFile(void)
     if(pPatients == NULL)
     {
         perror("Patients.dat not found, patient not deleted from file.");
-        fclose(pPatients);
+        return;
     }
 
-    for(int i = 0; i < totalPatients; i++)
+    struct Node *current = patientHead;
+    while(current != NULL)
     {
-        fwrite(&patients[i], sizeof(Patient), 1, pPatients);
+        if(fwrite(&(current->data), sizeof(Patient), 1, pPatients) != 1)
+        {
+            perror("Error writing patient to file");
+            fclose(pPatients);
+            return;
+        }
+        current = current->nextNode;
     }
 
     puts("patients.dat updated.");
@@ -484,18 +469,25 @@ static void updatePatientsFile(void)
 }
 
 /*
- * Checks if a patient with a given ID exists and returns their index.
+ * Prompts user for a patient ID and returns a pointer to the patient record in the linked list.
  */
-static int patientExists(int id)
+static Patient *getPatientFromList(int id)
 {
-    for(int i = 0; i < currentPatientCapacity; i++)
+    if(patientHead == NULL)
     {
-        if(patients[i].patientId == id)
-        {
-            return i;
-        }
+        return NULL;
     }
-    return PATIENT_NOT_FOUND;
+
+    struct Node *current = patientHead;
+    while(current != NULL)
+    {
+        if(current->data.patientId == id)
+        {
+            return &(current->data);
+        }
+        current = current->nextNode;
+    }
+    return NULL;
 }
 
 /**
@@ -515,4 +507,70 @@ static void writePatientToFile(Patient newPatient)
     fwrite(&newPatient, sizeof(Patient), 1, pPatients);
     fclose(pPatients);
     puts("\nPatient successfully added to file.\n");
+}
+
+/*
+ * Checks if a room is currently occupied.
+ */
+static int isRoomOccupiedInList(int roomNumber, struct Node *head)
+{
+    struct Node *current = head;
+    while(current != NULL)
+    {
+        if(current->data.roomNumber == roomNumber)
+            return 1;
+        current = current->nextNode;
+    }
+    return ROOM_UNOCCUPIED;
+}
+
+/*
+ * Computes the next available patient ID by scanning all loaded records.
+ * If no patients are loaded, it returns DEFAULT_ID.
+ */
+static int computeNextPatientId(void)
+{
+    int          maxId   = 0;
+    struct Node *current = patientHead;
+    while(current != NULL)
+    {
+        if(current->data.patientId > maxId)
+        {
+            maxId = current->data.patientId;
+        }
+        current = current->nextNode;
+    }
+    return maxId + 1;
+}
+
+/*
+ * Inserts a new patient node at the end of the linked list.
+ */
+static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
+{
+    struct Node *newNode = malloc(sizeof(struct Node));
+    if(newNode == NULL)
+    {
+        free(newNode);
+        return NULL;
+    }
+
+    newNode->data     = data;
+    newNode->nextNode = NULL;
+
+    if(head == NULL)
+    {
+        puts("No previous patients, patient added at start of list");
+        return newNode;
+    }
+
+    struct Node *current = head;
+    while(current->nextNode != NULL)
+    {
+        current = current->nextNode;
+    }
+    current->nextNode = newNode;
+
+    puts("Patient inserted at end of list.");
+    return head;
 }
