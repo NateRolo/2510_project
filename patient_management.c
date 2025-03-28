@@ -74,38 +74,8 @@ void initializePatientSystem(void)
             totalPatients++;
         }
 
-        // patients = malloc(sizeof(Patient) * count);
-
-        // if(patients == NULL)
-        // {
-        //     free(patients);
-        //     fclose(pPatients);
-        //     exit(EXIT_FAILURE);
-        // }
-
-        // size_t read = fread(patients, sizeof(Patient), count, pPatients);
-
-        // printf("%d", read);
-        // if(read != count)
-        // {
-        //     fclose(pPatients);
-        //     free(patients);
-        //     puts("\nError reading from patients.dat. Initializing with default settings.");
-        //     initializePatientSystemDefault();
-        //     return;
-        // }
-
-        // totalPatients          = read;
-
         patientIDCounter = count + 1;
-        // for(size_t i = 0; i < count; i++)
-        // {
-        //     if(patients[i].patientId >= patientIDCounter)
-        //     {
-        //         patientIDCounter = patients[i].patientId + 1;
-        //     }
-        // }
-
+          
         fclose(pPatients);
 
 
@@ -115,7 +85,6 @@ void initializePatientSystem(void)
     }
     else
     {
-        fclose(pPatients);
         puts("\nUnable to read patients.dat. Patients initialized with default settings.");
         initializePatientSystemDefault();
     }
@@ -447,8 +416,7 @@ static int confirmDischarge(Patient *patient)
 }
 
 /*
- * Removes a patient from the system by shifting array elements.
- * Also handles memory reallocation when capacity can be reduced.
+ * Removes a patient from the system by unlinking the corresponding node from the linked list.
  */
 static void removePatientFromSystem(Patient *patient)
 {
@@ -522,9 +490,9 @@ static void updatePatientsFile(void)
 }
 
 /*
- * Searches for and returns a pointer to a patient with the given ID.
- * Returns NULL if patient is not found.
+ * Prompts user for a patient ID and returns a pointer to the patient record in the linked list.
  */
+
 static Patient *getPatientFromList(int id)
 {
     if(patientHead == NULL)
