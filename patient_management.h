@@ -60,8 +60,6 @@ void dischargePatient(void);
 
 void clearMemory();
 
-struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
-
 void printList(struct Node* head);
 
 #endif // PATIENT_MANAGEMENT_H 
