@@ -58,8 +58,19 @@ void searchPatientById(void);
  */
 void dischargePatient(void);
 
+/*
+ * Function: clearMemory
+ * ---------------------
+ * Frees all dynamically allocated memory used for storing patient records.
+ */
 void clearMemory();
 
+/*
+ * Function: printList
+ * -------------------
+ * Iterates through the patient records stored in the linked list starting from the given head node
+ * and prints out each patient's details. 
+ */
 void printList(struct Node* head);
 
 #endif // PATIENT_MANAGEMENT_H 

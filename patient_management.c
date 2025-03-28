@@ -40,7 +40,7 @@ static void         writePatientToFile(Patient newPatient);
 static void         updatePatientsFile(void);
 static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
 static int          isRoomOccupiedInList(int roomNumber, struct Node *head);
-void                printList(struct Node *head);
+static int          computeNextPatientId(void);
 
 /*
  * Initializes the patient management system.
@@ -74,7 +74,7 @@ void initializePatientSystem(void)
             if(patientHead == NULL)
             {
                 puts("Unable to populate linked list with data from patients.dat, patients"
-                " initialized with default settings.");
+                     " initialized with default settings.");
                 initializePatientSystemDefault();
                 return;
             }
@@ -93,6 +93,10 @@ void initializePatientSystem(void)
     }
 }
 
+/*
+ * Iterates through the patient records stored in the linked list starting from the given head node
+ * and prints out each patient's details.
+ */
 void printList(struct Node *head)
 {
     struct Node *current = head;
@@ -141,35 +145,6 @@ void addPatientRecord(void)
 
     printf("--- Patient Added ---\n");
     printPatient(newPatient);
-}
-
-static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
-{
-    struct Node *newNode = malloc(sizeof(struct Node));
-    if(newNode == NULL)
-    {
-        free(newNode);
-        return NULL;
-    }
-
-    newNode->data     = data;
-    newNode->nextNode = NULL;
-
-    if(head == NULL)
-    {
-        puts("No previous patients, patient added at start of list");
-        return newNode;
-    }
-
-    struct Node *current = head;
-    while(current->nextNode != NULL)
-    {
-        current = current->nextNode;
-    }
-    current->nextNode = newNode;
-
-    puts("Patient inserted at end of list.");
-    return head;
 }
 
 /*
@@ -495,7 +470,6 @@ static void updatePatientsFile(void)
 /*
  * Prompts user for a patient ID and returns a pointer to the patient record in the linked list.
  */
-
 static Patient *getPatientFromList(int id)
 {
     if(patientHead == NULL)
@@ -566,4 +540,36 @@ static int computeNextPatientId(void)
         current = current->nextNode;
     }
     return maxId + 1;
+}
+
+/*
+ * Inserts a new patient node at the end of the linked list.
+ */
+static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
+{
+    struct Node *newNode = malloc(sizeof(struct Node));
+    if(newNode == NULL)
+    {
+        free(newNode);
+        return NULL;
+    }
+
+    newNode->data     = data;
+    newNode->nextNode = NULL;
+
+    if(head == NULL)
+    {
+        puts("No previous patients, patient added at start of list");
+        return newNode;
+    }
+
+    struct Node *current = head;
+    while(current->nextNode != NULL)
+    {
+        current = current->nextNode;
+    }
+    current->nextNode = newNode;
+
+    puts("Patient inserted at end of list.");
+    return head;
 }
