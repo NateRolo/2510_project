@@ -315,7 +315,14 @@ void dischargePatient(void)
  */
 void clearMemory()
 {
-    free(patients);
+    struct Node *current = patientHead;
+    while(current != NULL)
+    {
+        struct Node *next = current->nextNode;
+        free(current);
+        current = next;
+    }
+    patientHead = NULL;
     puts("Memory freed");
 }
 
