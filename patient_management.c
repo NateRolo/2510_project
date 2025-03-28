@@ -23,11 +23,9 @@ static const int NEXT_INDEX_OFFSET        = 1;
 static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
-static Patient     *patients;
 static struct Node *patientHead            = NULL;
 static int          totalPatients          = IS_EMPTY;
 static int          patientIDCounter       = DEFAULT_ID;
-static int          currentPatientCapacity = INITIAL_CAPACITY;
 
 // Function prototypes for internal helper functions
 static char        *getPatientName(char patientName[]);
@@ -97,7 +95,6 @@ void initializePatientSystem(void)
         // }
 
         // totalPatients          = read;
-        currentPatientCapacity = count;
 
         patientIDCounter = count + 1;
         // for(size_t i = 0; i < count; i++)
@@ -139,25 +136,10 @@ void printList(struct Node *head)
  */
 void initializePatientSystemDefault(void)
 {
-    patients = malloc(sizeof(Patient) * INITIAL_CAPACITY);
-
-    if(patients == NULL)
-    {
-        free(patients);
-        exit(EXIT_FAILURE);
-    }
-
-    for(int i = 0; i < INITIAL_CAPACITY; i++)
-    {
-        patients[i].patientId    = INVALID_ID;
-        patients[i].name[0]      = '\0';
-        patients[i].ageInYears   = 0;
-        patients[i].diagnosis[0] = '\0';
-        patients[i].roomNumber   = 0;
-    }
-    totalPatients          = IS_EMPTY;
-    patientIDCounter       = DEFAULT_ID;
-    currentPatientCapacity = INITIAL_CAPACITY;
+    patientHead      = NULL; 
+    totalPatients    = IS_EMPTY;
+    patientIDCounter = DEFAULT_ID;
+    puts("Patient system initialized with default settings using linked list.");
 }
 
 
@@ -166,18 +148,6 @@ void initializePatientSystemDefault(void)
  */
 void addPatientRecord(void)
 {
-    if(totalPatients >= currentPatientCapacity)
-    {
-        Patient *temp = realloc(patients, sizeof(Patient) * (currentPatientCapacity + 1));
-        if(temp == NULL)
-        {
-            free(patients);
-            exit(EXIT_FAILURE);
-        }
-        patients = temp;
-        currentPatientCapacity++;
-    }
-
     char patientName[MAX_PATIENT_NAME_LENGTH];
     int  patientAge;
     char patientDiagnosis[MAX_DIAGNOSIS_LENGTH];
@@ -191,14 +161,13 @@ void addPatientRecord(void)
     // Create and store new patient record
     Patient newPatient      = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
     patientHead             = insertPatientAtEndOfList(patientHead, newPatient);
-    patients[totalPatients] = newPatient;
     totalPatients++;
     patientIDCounter++;
 
     writePatientToFile(newPatient);
 
     printf("--- Patient Added ---\n");
-    printPatient(patients[totalPatients - 1]);
+    printPatient(newPatient);
 }
 
 static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
