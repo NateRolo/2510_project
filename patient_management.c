@@ -181,7 +181,7 @@ void viewPatientRecords(void)
     }
 
     struct Node *current = patientHead;
-    while(current->nextNode != NULL)
+    while(current != NULL)
     {
         printPatient(current->data);
         current = current->nextNode;
@@ -206,7 +206,7 @@ void searchPatientById(void)
     clearInputBuffer();
 
     struct Node *current = patientHead;
-    while(current->nextNode != NULL)
+    while(current != NULL)
     {
         if(current->data.patientId == id)
         {
