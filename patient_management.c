@@ -23,9 +23,9 @@ static const int NEXT_INDEX_OFFSET        = 1;
 static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
-static struct Node *patientHead            = NULL;
-static int          totalPatients          = IS_EMPTY;
-static int          patientIDCounter       = DEFAULT_ID;
+static struct Node *patientHead      = NULL;
+static int          totalPatients    = IS_EMPTY;
+static int          patientIDCounter = DEFAULT_ID;
 
 // Function prototypes for internal helper functions
 static char        *getPatientName(char patientName[]);
@@ -39,7 +39,8 @@ static Patient     *getPatientFromList(int id);
 static void         writePatientToFile(Patient newPatient);
 static void         updatePatientsFile(void);
 static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
-void               printList(struct Node *head);
+static int          isRoomOccupiedInList(int roomNumber, struct Node *head);
+void                printList(struct Node *head);
 
 /*
  * Initializes the patient management system.
@@ -136,7 +137,7 @@ void printList(struct Node *head)
  */
 void initializePatientSystemDefault(void)
 {
-    patientHead      = NULL; 
+    patientHead      = NULL;
     totalPatients    = IS_EMPTY;
     patientIDCounter = DEFAULT_ID;
     puts("Patient system initialized with default settings using linked list.");
@@ -159,8 +160,8 @@ void addPatientRecord(void)
     getRoomNumber(&roomNumber);
 
     // Create and store new patient record
-    Patient newPatient      = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
-    patientHead             = insertPatientAtEndOfList(patientHead, newPatient);
+    Patient newPatient = createPatient(patientName, patientAge, patientDiagnosis, roomNumber, patientIDCounter);
+    patientHead        = insertPatientAtEndOfList(patientHead, newPatient);
     totalPatients++;
     patientIDCounter++;
 
@@ -262,7 +263,7 @@ void dischargePatient(void)
 
     Patient *patientToDischarge = getPatientToDischarge();
 
-    if(patientToDischarge == NULL) 
+    if(patientToDischarge == NULL)
     {
         puts("Patient not found!");
         return;
@@ -407,8 +408,8 @@ static int getRoomNumber(int *roomNumber)
             continue;
         }
 
-        // Then check if the room is already occupied
-        if(isRoomOccupied(*roomNumber, patients, currentPatientCapacity) != ROOM_UNOCCUPIED)
+        // Check if the room is already occupied by traversing the linked list.
+        if(isRoomOccupiedInList(*roomNumber, patientHead) != ROOM_UNOCCUPIED)
         {
             printf("Room already occupied. Please choose another room.\n");
             isValid = IS_NOT_VALID;
@@ -515,7 +516,7 @@ static void updatePatientsFile(void)
         }
         current = current->nextNode;
     }
-    
+
     puts("patients.dat updated.");
     fclose(pPatients);
 }
@@ -526,13 +527,13 @@ static void updatePatientsFile(void)
  */
 static Patient *getPatientFromList(int id)
 {
-    if (patientHead == NULL)
+    if(patientHead == NULL)
     {
         return NULL;
     }
 
     struct Node *current = patientHead;
-    while(current != NULL)  
+    while(current != NULL)
     {
         if(current->data.patientId == id)
         {
@@ -540,7 +541,7 @@ static Patient *getPatientFromList(int id)
         }
         current = current->nextNode;
     }
-    return NULL; 
+    return NULL;
 }
 
 /**
@@ -560,4 +561,19 @@ static void writePatientToFile(Patient newPatient)
     fwrite(&newPatient, sizeof(Patient), 1, pPatients);
     fclose(pPatients);
     puts("\nPatient successfully added to file.\n");
+}
+
+/*
+ * Checks if a room is currently occupied.
+ */
+static int isRoomOccupiedInList(int roomNumber, struct Node *head)
+{
+    struct Node *current = head;
+    while(current != NULL)
+    {
+        if(current->data.roomNumber == roomNumber)
+            return 1;
+        current = current->nextNode;
+    }
+    return ROOM_UNOCCUPIED;
 }
