@@ -71,6 +71,13 @@ void initializePatientSystem(void)
         while(fread(&tempPatient, sizeof(Patient), 1, pPatients) == 1)
         {
             patientHead = insertPatientAtEndOfList(patientHead, tempPatient);
+            if(patientHead == NULL)
+            {
+                puts("Unable to populate linked list with data from patients.dat, patients"
+                " initialized with default settings.");
+                initializePatientSystemDefault();
+                return;
+            }
             totalPatients++;
         }
 
@@ -410,7 +417,7 @@ static int confirmDischarge(Patient *patient)
     printf("Patient ID: %d\n", patient->patientId);
     printf("Patient Name: %s\n", patient->name);
     printf("Are you sure you want to discharge this patient? (y/n)\n");
-    scanf("%c", &confirm);
+    scanf(" %c", &confirm);
     clearInputBuffer();
     return confirm == 'y';
 }
