@@ -30,16 +30,18 @@ static int          patientIDCounter       = DEFAULT_ID;
 static int          currentPatientCapacity = INITIAL_CAPACITY;
 
 // Function prototypes for internal helper functions
-static char *getPatientName(char patientName[]);
-static int   getPatientAge(int *patientAge);
-static char *getPatientDiagnosis(char patientDiagnosis[]);
-static int   getRoomNumber(int *roomNumber);
-static int   getPatientIndexForDischarge(void);
-static int   confirmDischarge(int patientIndex);
-static void  removePatientFromSystem(int index);
-static int   patientExists(int id);
-static void  writePatientToFile(Patient newPatient);
-static void  updatePatientsFile(void);
+static char        *getPatientName(char patientName[]);
+static int          getPatientAge(int *patientAge);
+static char        *getPatientDiagnosis(char patientDiagnosis[]);
+static int          getRoomNumber(int *roomNumber);
+static Patient     *getPatientToDischarge(void);
+static int          confirmDischarge(Patient *patient);
+static void         removePatientFromSystem(Patient *patient);
+static Patient     *getPatientFromList(int id);
+static void         writePatientToFile(Patient newPatient);
+static void         updatePatientsFile(void);
+static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
+void               printList(struct Node *head);
 
 /*
  * Initializes the patient management system.
@@ -199,7 +201,7 @@ void addPatientRecord(void)
     printPatient(patients[totalPatients - 1]);
 }
 
-struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
+static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
 {
     struct Node *newNode = malloc(sizeof(struct Node));
     if(newNode == NULL)
@@ -286,13 +288,20 @@ void dischargePatient(void)
     if(patientHead == NULL)
     {
         puts("No patients to discharge!");
+        return; // Add return here
     }
 
-    Patient **patientToDischarge = getPatientToDischarge();
+    Patient *patientToDischarge = getPatientToDischarge();
 
-    if(confirmDischarge(*patientToDischarge))
+    if(patientToDischarge == NULL) 
     {
-        removePatientFromSystem(*patientToDischarge);
+        puts("Patient not found!");
+        return;
+    }
+
+    if(confirmDischarge(patientToDischarge))
+    {
+        removePatientFromSystem(patientToDischarge);
         printf("Patient has been discharged!\n");
     }
     else
@@ -516,25 +525,38 @@ static void updatePatientsFile(void)
     if(pPatients == NULL)
     {
         perror("Patients.dat not found, patient not deleted from file.");
-        fclose(pPatients);
+        return;
     }
 
-    for(int i = 0; i < totalPatients; i++)
+    struct Node *current = patientHead;
+    while(current != NULL)
     {
-        fwrite(&patients[i], sizeof(Patient), 1, pPatients);
+        if(fwrite(&(current->data), sizeof(Patient), 1, pPatients) != 1)
+        {
+            perror("Error writing patient to file");
+            fclose(pPatients);
+            return;
+        }
+        current = current->nextNode;
     }
-
+    
     puts("patients.dat updated.");
     fclose(pPatients);
 }
 
 /*
- * Checks if a patient with a given ID exists and returns their index.
+ * Searches for and returns a pointer to a patient with the given ID.
+ * Returns NULL if patient is not found.
  */
 static Patient *getPatientFromList(int id)
 {
+    if (patientHead == NULL)
+    {
+        return NULL;
+    }
+
     struct Node *current = patientHead;
-    while(current->nextNode != NULL)
+    while(current != NULL)  
     {
         if(current->data.patientId == id)
         {
@@ -542,7 +564,7 @@ static Patient *getPatientFromList(int id)
         }
         current = current->nextNode;
     }
-    return;
+    return NULL; 
 }
 
 /**
