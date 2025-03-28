@@ -81,13 +81,9 @@ void initializePatientSystem(void)
             totalPatients++;
         }
 
-        patientIDCounter = count + 1;
-          
+        patientIDCounter = computeNextPatientId();
         fclose(pPatients);
-
-
         puts("\nPatients successfully loaded from file.");
-
         printList(patientHead);
     }
     else
@@ -551,4 +547,23 @@ static int isRoomOccupiedInList(int roomNumber, struct Node *head)
         current = current->nextNode;
     }
     return ROOM_UNOCCUPIED;
+}
+
+/*
+ * Computes the next available patient ID by scanning all loaded records.
+ * If no patients are loaded, it returns DEFAULT_ID.
+ */
+static int computeNextPatientId(void)
+{
+    int          maxId   = 0;
+    struct Node *current = patientHead;
+    while(current != NULL)
+    {
+        if(current->data.patientId > maxId)
+        {
+            maxId = current->data.patientId;
+        }
+        current = current->nextNode;
+    }
+    return maxId + 1;
 }
