@@ -82,4 +82,6 @@ void displayPatientReport();
 
 void displayDischargedPatientReport();
 
+void displayRoomUsageReport(void);
+
 #endif // PATIENT_MANAGEMENT_H 

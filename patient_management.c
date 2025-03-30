@@ -44,6 +44,8 @@ static int          isRoomOccupiedInList(int roomNumber, PatientNode *head);
 static int          computeNextPatientId(void);
 static int countPatientsByTimeframe(int timeframe);
 void printFormattedReport(FILE *file, const char *header, int result, const PatientNode *patient);
+static void         logRoomUsage(int roomNumber);
+void displayRoomUsageReport(void);
 
 /*
  * Initializes the patient management system.
@@ -224,14 +226,15 @@ void dischargePatient(void)
     {
         // Save discharged patient data
         DischargedPatient dischargedPatient;
-        dischargedPatient.patient = *patientToDischarge;
-        dischargedPatient.dischargeDate = time(NULL);  // Current time as discharge time
+        dischargedPatient.patient     = *patientToDischarge;
+        dischargedPatient.dischargeDate = time(NULL); // Current time as discharge time
 
         // Append to discharged patients file
         FILE *file = fopen("discharged_patients.dat", "ab");
         if(file == NULL)
         {
             perror("Error opening discharged_patients.dat");
+            // Consider if you should stop the discharge process here
             return;
         }
 
@@ -239,13 +242,16 @@ void dischargePatient(void)
         {
             perror("Error writing to discharged_patients.dat");
             fclose(file);
+            // Consider if you should stop the discharge process here
             return;
         }
-
         fclose(file);
 
+        // ----> ADD THIS LINE <----
+        logRoomUsage(patientToDischarge->roomNumber); // Log the room usage
+
         // Remove from the active patient list
-        removePatientFromSystem(patientToDischarge);
+        removePatientFromSystem(patientToDischarge); // Pass the pointer
         printf("Patient has been discharged!\n");
     }
     else
@@ -885,4 +891,91 @@ void displayDischargedPatientReport()
 
     fclose(file);
     printf("\nDischarge Report successfully written to discharged_reports.txt\n");
+}
+
+static void logRoomUsage(int roomNumber)
+{
+    FILE *file = fopen("room_usage.txt", "a"); // Open in append mode
+
+    if(file == NULL)
+    {
+        perror("Error opening room_usage.txt for logging");
+        // Decide if this is a critical error or just a warning.
+        // For now, we'll print an error and continue.
+        return;
+    }
+
+    // Write the room number followed by a newline
+    fprintf(file, "%d\n", roomNumber);
+
+    fclose(file);
+    // Optional: Add a confirmation message here if desired
+    // printf("Room %d usage logged.\n", roomNumber);
+}
+
+void displayRoomUsageReport(void)
+{
+    FILE *file = fopen("room_usage.txt", "r"); // Open in read mode
+    int   roomCounts[50 + 1] = {0}; // Array to store counts (index 0 unused)
+    int   roomNumber;
+    int   totalEntries = 0;
+    int   validEntries = 0;
+
+    printf("\n--- Room Usage Report ---\n");
+
+    if(file == NULL)
+    {
+        // It's okay if the file doesn't exist yet, just means no usage logged
+        if(errno == ENOENT) // Check if the error is "No such file or directory"
+        {
+            printf("No room usage has been logged yet (room_usage.txt not found).\n");
+        }
+        else
+        {
+            perror("Error opening room_usage.txt for reading");
+        }
+        printf("-------------------------\n");
+        return;
+    }
+
+    // Read each room number from the file
+    while(fscanf(file, "%d", &roomNumber) == 1)
+    {
+        totalEntries++;
+        // Validate the room number and increment the count
+        if(roomNumber >= 1 && roomNumber <= 50)
+        {
+            roomCounts[roomNumber]++;
+            validEntries++;
+        }
+        else
+        {
+            fprintf(stderr, "Warning: Found invalid room number '%d' in room_usage.txt\n", roomNumber);
+        }
+    }
+
+    fclose(file);
+
+    printf("Room | Usage Count\n");
+    printf("-----|------------\n");
+
+    int roomsReported = 0;
+    for(int i = 1; i <= 50; i++)
+    {
+        if(roomCounts[i] > 0) // Only print rooms that were actually used
+        {
+            printf("%-4d | %d\n", i, roomCounts[i]);
+            roomsReported++;
+        }
+    }
+
+    if(roomsReported == 0 && validEntries == 0)
+    {
+        printf("No valid room usage data found in the file.\n");
+    }
+
+    printf("-------------------------\n");
+    printf("Total entries read: %d\n", totalEntries);
+    printf("Valid rooms logged: %d\n", validEntries);
+    printf("-------------------------\n");
 }
