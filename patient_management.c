@@ -42,6 +42,8 @@ static void         updatePatientsFile(void);
 static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data);
 static int          isRoomOccupiedInList(int roomNumber, PatientNode *head);
 static int          computeNextPatientId(void);
+static int countPatientsByTimeframe(int timeframe);
+void printFormattedReport(FILE *file, const char *header, int result, const PatientNode *patient);
 
 /*
  * Initializes the patient management system.
@@ -220,6 +222,29 @@ void dischargePatient(void)
 
     if(confirmDischarge(patientToDischarge))
     {
+        // Save discharged patient data
+        DischargedPatient dischargedPatient;
+        dischargedPatient.patient = *patientToDischarge;
+        dischargedPatient.dischargeDate = time(NULL);  // Current time as discharge time
+
+        // Append to discharged patients file
+        FILE *file = fopen("discharged_patients.dat", "ab");
+        if(file == NULL)
+        {
+            perror("Error opening discharged_patients.dat");
+            return;
+        }
+
+        if(fwrite(&dischargedPatient, sizeof(DischargedPatient), 1, file) != 1)
+        {
+            perror("Error writing to discharged_patients.dat");
+            fclose(file);
+            return;
+        }
+
+        fclose(file);
+
+        // Remove from the active patient list
         removePatientFromSystem(patientToDischarge);
         printf("Patient has been discharged!\n");
     }
@@ -713,4 +738,151 @@ void displayPatientReport()
 
     fclose(file);
     printf("\nReport successfully written to patient_reports.txt\n");
+}
+
+// Function to count discharged patients by time frame
+static int countDischargedPatientsByTimeframe(int timeframe)
+{
+    FILE *file = fopen("discharged_patients.dat", "rb");
+    if(file == NULL)
+    {
+        printf("No discharged patients found!\n");
+        return 0;
+    }
+
+    int count = 0;
+    time_t now = time(NULL);
+    struct tm *currentTime = localtime(&now);
+
+    DischargedPatient dischargedPatient;
+    while(fread(&dischargedPatient, sizeof(DischargedPatient), 1, file) == 1)
+    {
+        time_t dischargeTimestamp = dischargedPatient.dischargeDate;
+        struct tm *dischargeTime = localtime(&dischargeTimestamp);
+
+        // Calculate difference in seconds and convert to hours
+        double secondsDiff = difftime(now, dischargeTimestamp);
+        int hoursDiff = secondsDiff / 3600;
+
+        // Adjusted time conditions
+        int past24Hours = (hoursDiff <= 24);
+        int sameWeek = (dischargeTime->tm_year == currentTime->tm_year &&
+                        (currentTime->tm_yday - dischargeTime->tm_yday) < 7);
+        int sameMonth = (dischargeTime->tm_year == currentTime->tm_year &&
+                         dischargeTime->tm_mon == currentTime->tm_mon);
+
+        // Increment count based on timeframe
+        if ((timeframe == 1 && past24Hours) ||  // Daily
+            (timeframe == 2 && sameWeek) ||     // Weekly
+            (timeframe == 3 && sameMonth))      // Monthly
+        {
+            count++;
+        }
+    }
+
+    fclose(file);
+    return count;
+}
+
+// Helper function to print and write the formatted discharge report
+void printDischargedFormattedReport(FILE *file, const char *header, int result, const char *timeframe)
+{
+    time_t now = time(NULL);
+    struct tm *currentTime = localtime(&now);
+    char currentTimeStr[20];
+    strftime(currentTimeStr, sizeof(currentTimeStr), "%Y-%m-%d", currentTime);
+
+    // Print header with the date
+    printf("%s - %s\n", header, currentTimeStr);
+    fprintf(file, "%s - %s\n", header, currentTimeStr);
+    printf("=======================================\n");
+    fprintf(file, "=======================================\n");
+
+    printf("Total patients discharged: %d\n", result);
+    fprintf(file, "Total patients discharged: %d\n", result);
+
+    printf("---------------------------------------\n");
+    fprintf(file, "---------------------------------------\n");
+
+    if (result == 0)
+    {
+        printf("| No patients discharged in this timeframe |\n");
+        fprintf(file, "| No patients discharged in this timeframe |\n");
+        printf("---------------------------------------\n");
+        fprintf(file, "---------------------------------------\n");
+    }
+    else
+    {
+        FILE *fileRead = fopen("discharged_patients.dat", "rb");
+        if (fileRead == NULL)
+        {
+            printf("Error opening file to read discharged patients.\n");
+            return;
+        }
+
+        DischargedPatient dischargedPatient;
+        while (fread(&dischargedPatient, sizeof(DischargedPatient), 1, fileRead) == 1)
+        {
+            time_t dischargeTimestamp = dischargedPatient.dischargeDate;
+            struct tm *dischargeTime = localtime(&dischargeTimestamp);
+            char dischargeDateStr[20];
+            strftime(dischargeDateStr, sizeof(dischargeDateStr), "%Y-%m-%d", dischargeTime);
+
+            // Printing discharged patient details
+            printf("| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Discharged: %-10s |\n",
+                   dischargedPatient.patient.patientId, dischargedPatient.patient.name,
+                   dischargedPatient.patient.ageInYears, dischargedPatient.patient.roomNumber, dischargedPatient.patient.diagnosis, dischargeDateStr);
+            fprintf(file, "| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Discharged: %-10s |\n",
+                    dischargedPatient.patient.patientId, dischargedPatient.patient.name,
+                    dischargedPatient.patient.ageInYears, dischargedPatient.patient.roomNumber, dischargedPatient.patient.diagnosis, dischargeDateStr);
+
+            printf("---------------------------------------\n");
+            fprintf(file, "---------------------------------------\n");
+        }
+
+        fclose(fileRead);
+    }
+}
+
+// Function to display discharged patient report in a formatted box and write to a file
+void displayDischargedPatientReport()
+{
+    int choice;
+    printf("Select timeframe:\n");
+    printf("1. Daily\n");
+    printf("2. Weekly\n");
+    printf("3. Monthly\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+    clearInputBuffer();
+
+    if (choice < 1 || choice > 3)
+    {
+        printf("Invalid choice!\n");
+        return;
+    }
+
+    int result = countDischargedPatientsByTimeframe(choice); // Count discharged patients based on the timeframe
+
+    // Open file for appending (if exists) or creating (if it doesn't exist)
+    FILE *file = fopen("discharged_reports.txt", "a");
+    if (file == NULL)
+    {
+        printf("Error opening file for writing!\n");
+        return;
+    }
+
+    // Add space between reports if there are existing entries
+    fprintf(file, "\n\n");
+
+    // Print header based on choice and write to file
+    if (choice == 1)
+        printDischargedFormattedReport(file, "   Discharged Patient Report - Daily", result, "Daily");
+    else if (choice == 2)
+        printDischargedFormattedReport(file, "   Discharged Patient Report - Weekly", result, "Weekly");
+    else if (choice == 3)
+        printDischargedFormattedReport(file, "   Discharged Patient Report - Monthly", result, "Monthly");
+
+    fclose(file);
+    printf("\nDischarge Report successfully written to discharged_reports.txt\n");
 }

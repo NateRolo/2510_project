@@ -14,6 +14,11 @@ typedef struct PatientNode
     struct PatientNode *nextNode;
 } PatientNode;
 
+typedef struct DischargedPatient {
+    Patient patient;
+    time_t dischargeDate;  // Time of discharge
+} DischargedPatient;
+
 /*
  * Function: initializePatientSystem
  * --------------------------------
@@ -74,5 +79,7 @@ void clearMemory();
 void printList(PatientNode *head);
 
 void displayPatientReport();
+
+void displayDischargedPatientReport();
 
 #endif // PATIENT_MANAGEMENT_H 
