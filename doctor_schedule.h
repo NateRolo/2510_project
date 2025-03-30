@@ -37,4 +37,6 @@ void assignDoctor(void);
  */
 void printFullSchedule(void);
 
+void printDoctorUtilizationReport();
+
 #endif // SCHEDULE_H
