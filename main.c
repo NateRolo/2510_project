@@ -20,7 +20,8 @@
 #define VIEW_ALL_PATIENTS 3
 #define DISCHARGE_PATIENT 4
 #define MANAGE_DOCTOR_SCHEDULE 5
-#define EXIT_PROGRAM 6
+#define PATIENT_REPORT_MENU 6
+#define EXIT_PROGRAM 7
 
 #define DEFAULT_VALUE (-1)  
 #define VALID_INPUT 1       
@@ -69,7 +70,8 @@ void menu()
                "3: View All Patients.\n"
                "4: Discharge Patient.\n"
                "5: Manage Doctor Schedule.\n"
-               "6: Exit.\n");
+               "6: Patient Report Menu\n"
+               "7: Exit.\n");
 
         // Read user input and validate
         if (scanf("%d", &userInput) != VALID_INPUT)
@@ -101,6 +103,10 @@ void menu()
         case MANAGE_DOCTOR_SCHEDULE:
             clearInputBuffer();
             doctorMenu();
+            break;
+        case PATIENT_REPORT_MENU:
+            clearInputBuffer();
+            displayPatientReport();
             break;
         case EXIT_PROGRAM:
             puts("Exiting program, have a nice day!\n");

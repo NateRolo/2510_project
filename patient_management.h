@@ -8,11 +8,11 @@
 #define PATIENT_MANAGEMENT_H
 #include "patient_data.h"
 
-struct Node
+typedef struct PatientNode
 {
     Patient data;
-    struct Node *nextNode;
-};
+    struct PatientNode *nextNode;
+} PatientNode;
 
 /*
  * Function: initializePatientSystem
@@ -71,6 +71,8 @@ void clearMemory();
  * Iterates through the patient records stored in the linked list starting from the given head node
  * and prints out each patient's details. 
  */
-void printList(struct Node* head);
+void printList(PatientNode *head);
+
+void displayPatientReport();
 
 #endif // PATIENT_MANAGEMENT_H 

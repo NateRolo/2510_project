@@ -7,6 +7,8 @@
 #ifndef PATIENT_DATA_H
 #define PATIENT_DATA_H
 
+#include <time.h>
+
 // Constants for patient data
 #define MAX_PATIENT_NAME_LENGTH 100
 #define MAX_DIAGNOSIS_LENGTH 255

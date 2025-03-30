@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "patient_data.h"
 #include "utils.h"
 
@@ -23,7 +24,7 @@ static const int NEXT_INDEX_OFFSET        = 1;
 static const int ROOM_UNOCCUPIED          = -1;
 
 // Global patient data
-static struct Node *patientHead      = NULL;
+static PatientNode *patientHead      = NULL;
 static int          totalPatients    = IS_EMPTY;
 static int          patientIDCounter = DEFAULT_ID;
 
@@ -38,8 +39,8 @@ static void         removePatientFromSystem(Patient *patient);
 static Patient     *getPatientFromList(int id);
 static void         writePatientToFile(Patient newPatient);
 static void         updatePatientsFile(void);
-static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data);
-static int          isRoomOccupiedInList(int roomNumber, struct Node *head);
+static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data);
+static int          isRoomOccupiedInList(int roomNumber, PatientNode *head);
 static int          computeNextPatientId(void);
 
 /*
@@ -97,9 +98,9 @@ void initializePatientSystem(void)
  * Iterates through the patient records stored in the linked list starting from the given head node
  * and prints out each patient's details.
  */
-void printList(struct Node *head)
+void printList(PatientNode *head)
 {
-    struct Node *current = head;
+    PatientNode *current = head;
     while(current)
     {
         printf("%d\n%s\n", current->data.patientId, current->data.name);
@@ -159,7 +160,7 @@ void viewPatientRecords(void)
         return;
     }
 
-    struct Node *current = patientHead;
+    PatientNode *current = patientHead;
     while(current != NULL)
     {
         printPatient(current->data);
@@ -184,7 +185,7 @@ void searchPatientById(void)
     scanf("%d", &id);
     clearInputBuffer();
 
-    struct Node *current = patientHead;
+    PatientNode *current = patientHead;
     while(current != NULL)
     {
         if(current->data.patientId == id)
@@ -233,10 +234,10 @@ void dischargePatient(void)
  */
 void clearMemory()
 {
-    struct Node *current = patientHead;
+    PatientNode  *current = patientHead;
     while(current != NULL)
     {
-        struct Node *next = current->nextNode;
+        PatientNode *next = current->nextNode;
         free(current);
         current = next;
     }
@@ -404,8 +405,8 @@ static void removePatientFromSystem(Patient *patient)
         return;
     }
 
-    struct Node *current  = patientHead;
-    struct Node *prevNode = NULL;
+    PatientNode *current  = patientHead;
+    PatientNode *prevNode = NULL;
 
     if(current != NULL && current->data.patientId == patient->patientId)
     {
@@ -452,7 +453,7 @@ static void updatePatientsFile(void)
         return;
     }
 
-    struct Node *current = patientHead;
+    PatientNode *current = patientHead;
     while(current != NULL)
     {
         if(fwrite(&(current->data), sizeof(Patient), 1, pPatients) != 1)
@@ -478,7 +479,7 @@ static Patient *getPatientFromList(int id)
         return NULL;
     }
 
-    struct Node *current = patientHead;
+    PatientNode *current = patientHead;
     while(current != NULL)
     {
         if(current->data.patientId == id)
@@ -512,9 +513,9 @@ static void writePatientToFile(Patient newPatient)
 /*
  * Checks if a room is currently occupied.
  */
-static int isRoomOccupiedInList(int roomNumber, struct Node *head)
+static int isRoomOccupiedInList(int roomNumber, PatientNode *head)
 {
-    struct Node *current = head;
+    PatientNode *current = head;
     while(current != NULL)
     {
         if(current->data.roomNumber == roomNumber)
@@ -531,7 +532,7 @@ static int isRoomOccupiedInList(int roomNumber, struct Node *head)
 static int computeNextPatientId(void)
 {
     int          maxId   = 0;
-    struct Node *current = patientHead;
+    PatientNode *current = patientHead;
     while(current != NULL)
     {
         if(current->data.patientId > maxId)
@@ -546,9 +547,9 @@ static int computeNextPatientId(void)
 /*
  * Inserts a new patient node at the end of the linked list.
  */
-static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
+static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data)
 {
-    struct Node *newNode = malloc(sizeof(struct Node));
+    PatientNode *newNode = malloc(sizeof(PatientNode ));
     if(newNode == NULL)
     {
         free(newNode);
@@ -564,7 +565,7 @@ static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
         return newNode;
     }
 
-    struct Node *current = head;
+    PatientNode *current = head;
     while(current->nextNode != NULL)
     {
         current = current->nextNode;
@@ -573,4 +574,143 @@ static struct Node *insertPatientAtEndOfList(struct Node *head, Patient data)
 
     puts("Patient inserted at end of list.");
     return head;
+}
+
+// Function to count patients admitted within a given timeframe
+static int countPatientsByTimeframe(int timeframe)
+{
+    if (patientHead == NULL)
+    {
+        printf("No patients admitted!\n");
+        return 0;
+    }
+
+    int count = 0;
+    time_t now = time(NULL);
+    struct tm *currentTime = localtime(&now);
+
+    PatientNode *current = patientHead;
+    while (current != NULL)
+    {
+        time_t admissionTimestamp = current->data.admissionDate;
+        struct tm *admissionTime = localtime(&admissionTimestamp);
+
+        // Calculate difference in seconds and convert to hours
+        double secondsDiff = difftime(now, admissionTimestamp);
+        int hoursDiff = secondsDiff / 3600;
+
+        // Adjusted time conditions
+        int past24Hours = (hoursDiff <= 24);
+        int sameWeek = (admissionTime->tm_year == currentTime->tm_year &&
+                        (currentTime->tm_yday - admissionTime->tm_yday) < 7);
+        int sameMonth = (admissionTime->tm_year == currentTime->tm_year &&
+                         admissionTime->tm_mon == currentTime->tm_mon);
+
+        // Increment count based on timeframe
+        if ((timeframe == 1 && past24Hours) ||  // Daily
+            (timeframe == 2 && sameWeek) ||     // Weekly
+            (timeframe == 3 && sameMonth))      // Monthly
+        {
+            count++;
+        }
+
+        current = current->nextNode;
+    }
+
+    return count;
+}
+
+// Helper function to print and write the formatted report
+void printFormattedReport(FILE *file, const char *header, int result, const PatientNode *patient)
+{
+    time_t now = time(NULL);
+    struct tm *currentTime = localtime(&now);
+    char currentTimeStr[20];
+    strftime(currentTimeStr, sizeof(currentTimeStr), "%Y-%m-%d", currentTime);
+
+    // Print header with the date
+    printf("%s - %s\n", header, currentTimeStr);
+    fprintf(file, "%s - %s\n", header, currentTimeStr);
+    printf("=======================================\n");
+    fprintf(file, "=======================================\n");
+
+    printf("Total patients admitted: %d\n", result);
+    fprintf(file, "Total patients admitted: %d\n", result);
+
+    printf("---------------------------------------\n");
+    fprintf(file, "---------------------------------------\n");
+
+    if (result == 0)
+    {
+        printf("| No patients admitted in this timeframe |\n");
+        fprintf(file, "| No patients admitted in this timeframe |\n");
+        printf("---------------------------------------\n");
+        fprintf(file, "---------------------------------------\n");
+    }
+    else
+    {
+        struct tm *admissionTime;
+        char admissionDateStr[20];
+        while (patient != NULL)
+        {
+            admissionTime = localtime(&patient->data.admissionDate);
+            strftime(admissionDateStr, sizeof(admissionDateStr), "%Y-%m-%d", admissionTime);
+
+            // Printing patient details
+            printf("| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Admitted: %-10s |\n",
+                   patient->data.patientId, patient->data.name,
+                   patient->data.ageInYears, patient->data.roomNumber, patient->data.diagnosis, admissionDateStr);
+            fprintf(file, "| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Admitted: %-10s |\n",
+                    patient->data.patientId, patient->data.name,
+                    patient->data.ageInYears, patient->data.roomNumber, patient->data.diagnosis, admissionDateStr);
+
+            printf("---------------------------------------\n");
+            fprintf(file, "---------------------------------------\n");
+
+            patient = patient->nextNode;
+        }
+    }
+}
+
+// Function to display patient report in a formatted box and write to a file
+void displayPatientReport()
+{
+    int choice;
+    printf("Select timeframe:\n");
+    printf("1. Daily\n");
+    printf("2. Weekly\n");
+    printf("3. Monthly\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
+    clearInputBuffer();
+
+    if (choice < 1 || choice > 3)
+    {
+        printf("Invalid choice!\n");
+        return;
+    }
+
+    int result = countPatientsByTimeframe(choice);
+
+    // Open file for appending (if exists) or creating (if it doesn't exist)
+    FILE *file = fopen("patient_reports.txt", "a");
+    if (file == NULL)
+    {
+        printf("Error opening file for writing!\n");
+        return;
+    }
+
+    // Add space between reports if there are existing entries
+    fprintf(file, "\n\n");
+
+    // Print header based on choice and write to file
+    if (choice == 1)
+        printFormattedReport(file, "   Patient Admission Report - Daily", result, patientHead);
+    else if (choice == 2)
+        printFormattedReport(file, "   Patient Admission Report - Weekly", result, patientHead);
+    else if (choice == 3)
+        printFormattedReport(file, "   Patient Admission Report - Monthly", result, patientHead);
+
+    fclose(file);
+    printf("\nReport successfully written to patient_reports.txt\n");
 }
