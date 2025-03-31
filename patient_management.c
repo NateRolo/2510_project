@@ -11,6 +11,7 @@
 #include <time.h>
 #include "patient_data.h"
 #include "utils.h"
+#include  <errno.h>
 
 // Private constants
 #define INITIAL_CAPACITY 1
@@ -211,7 +212,7 @@ void dischargePatient(void)
     if(patientHead == NULL)
     {
         puts("No patients to discharge!");
-        return; // Add return here
+        return; 
     }
 
     Patient *patientToDischarge = getPatientToDischarge();
@@ -258,6 +259,16 @@ void dischargePatient(void)
     {
         printf("Patient discharge cancelled.\n");
     }
+}
+
+void backupPatientSystem()
+{
+    updatePatientsFile();
+}
+
+void restoreDataFromFile()
+{
+    initializePatientSystem();
 }
 
 /*
