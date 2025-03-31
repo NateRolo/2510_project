@@ -73,12 +73,16 @@ void menu()
                "2: Search Patient by ID.\n"
                "3: View All Patients.\n"
                "4: Discharge Patient.\n"
-               "5: Manage Doctor Schedule.\n"
-               "6: Patient Admission Report Menu\n"
-               "7: Patient Discharge Report Menu\n"
-               "8: Doctor Schedule Report\n"
-               "9: Room Usage Report\n"
-               "10: Exit.\n");
+               "5: Backup Patients File.\n"
+               "6: Restore Patient Data From File.\n"
+               "\n"
+               "7: Manage Doctor Schedule.\n"
+               "8: Patient Admission Report Menu\n"
+               "9: Patient Discharge Report Menu\n"
+               "10: Doctor Schedule Report\n"
+               "11: Room Usage Report\n"
+               "\n"
+               "12: Exit.\n");
 
         // Read user input and validate
         if (scanf("%d", &userInput) != VALID_INPUT)
