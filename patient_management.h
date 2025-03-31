@@ -78,9 +78,9 @@ void clearMemory();
  */
 void printList(PatientNode *head);
 
-void displayPatientReport();
+void displayPatientReport(int choice);
 
-void displayDischargedPatientReport();
+void displayDischargedPatientReport(int choice);
 
 void displayRoomUsageReport(void);
 

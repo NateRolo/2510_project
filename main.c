@@ -32,6 +32,7 @@
 // Function prototype for the main menu
 void menu();
 void doctorMenu();
+int getPatientReportChoice();
 
 /*
  * Function: main
@@ -112,11 +113,11 @@ void menu()
             break;
         case PATIENT_ADMIT_REPORT:
             clearInputBuffer();
-            displayPatientReport();
+            displayPatientReport(getPatientReportChoice());
             break;
         case PATIENT_DISCHARGE_REPORT:
             clearInputBuffer();
-            displayDischargedPatientReport();
+            displayDischargedPatientReport(getPatientReportChoice());
             break;
         case DOC_SCHE_REPORT:
             clearInputBuffer();
@@ -181,4 +182,27 @@ void doctorMenu()
                 userInput = DEFAULT_VALUE;
         }
     } while (userInput != EXIT_PROGRAM);
+}
+
+int getPatientReportChoice()
+{
+    int choice;
+
+    do {
+        printf("Select timeframe:\n");
+        printf("1. Daily\n");
+        printf("2. Weekly\n");
+        printf("3. Monthly\n");
+        printf("Enter choice: ");
+
+        if (scanf("%d", &choice) != 1 || choice < 1 || choice > 3) {
+            printf("Invalid input. Please enter a number between 1 and 3.\n");
+            clearInputBuffer();  // Clear invalid input
+            choice = 0;  // Reset choice to force re-entry
+        }
+    } while (choice < 1 || choice > 3);
+
+    printf("\n");
+
+    return choice;
 }
