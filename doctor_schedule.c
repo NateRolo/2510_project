@@ -269,3 +269,53 @@ static int timeExists(const int timeIndex)
     printf("Invalid Time.\n");
     return INVALID_INPUT;
 }
+
+// Helper function to count shifts for a specific doctor
+static int countDoctorShifts(int doctorId) {
+    int shiftCount = 0;
+
+    for (int dayIndex = 0; dayIndex < DAYS_IN_WEEK; dayIndex++) {
+        for (int timeIndex = 0; timeIndex < TIMES_OF_DAY; timeIndex++) {
+            if (weeklyDoctorSchedule[dayIndex][timeIndex].id == doctorId) {
+                shiftCount++;
+            }
+        }
+    }
+
+    return shiftCount;
+}
+
+// Helper function to print the report in a formatted way and save it to a file
+void printDoctorUtilizationReport() {
+    FILE *reportFile = fopen("doctor_utilization_report.txt", "w");
+    if (reportFile == NULL) {
+        printf("Error opening file to write the report.\n");
+        return;
+    }
+
+    // Print header to console and file
+    printf("Doctor Utilization Report\n");
+    printf("==========================\n");
+    fprintf(reportFile, "Doctor Utilization Report\n");
+    fprintf(reportFile, "==========================\n");
+
+    // Iterate over all doctors and count their shifts
+    const Doctor doctors[] = {
+        {RAYMOND_ID, "Raymond", 40},
+        {GEORGE_ID, "George", 45},
+        {SOFIA_ID, "Sofia", 35}
+    };
+
+    for (int i = 0; i < 3; i++) {
+        int shiftCount = countDoctorShifts(doctors[i].id);
+
+        // Print doctor details and shift count
+        printf("Dr.%s - Shifts Covered: %d\n", doctors[i].name, shiftCount);
+        fprintf(reportFile, "Dr.%s - Shifts Covered: %d\n", doctors[i].name, shiftCount);
+    }
+
+    // Close the report file
+    fclose(reportFile);
+    printf("\nReport successfully written to doctor_utilization_report.txt\n");
+}
+
