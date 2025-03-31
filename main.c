@@ -35,6 +35,7 @@
 void menu();
 void doctorMenu();
 int  getPatientReportChoice();
+static void handleRestoreConfirmation(void);
 
 /*
  * Function: main
@@ -119,7 +120,7 @@ void menu()
                 break;
             case RESTORE_PATIENT_DATA:
                 clearInputBuffer();
-                initializePatientSystem();
+                handleRestoreConfirmation();
                 break;
             case MANAGE_DOCTOR_SCHEDULE:
                 clearInputBuffer();
@@ -224,4 +225,27 @@ int getPatientReportChoice()
     printf("\n");
 
     return choice;
+}
+
+/*
+ * Handles the user confirmation process for restoring patient data from file.
+ * Prompts the user and proceeds with restoration only if confirmed.
+ */
+static void handleRestoreConfirmation(void)
+{
+    printf("Restoring from file will discard any unsaved changes in memory.\n");
+    printf("Are you sure you want to restore? (y/n): ");
+
+    char confirm = getchar();
+    
+    clearInputBuffer(); // Clear the newline after getchar()
+
+    if (confirm == 'y' || confirm == 'Y')
+    {
+        restoreDataFromFile();
+    }
+    else
+    {
+        printf("Restore operation cancelled.\n");
+    }
 }
