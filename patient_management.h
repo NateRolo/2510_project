@@ -63,6 +63,9 @@ void searchPatientById(void);
  */
 void dischargePatient(void);
 
+void backupPatientSystem(void);
+
+void restoreDataFromFile(void);
 /*
  * Function: clearMemory
  * ---------------------
