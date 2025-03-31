@@ -6,33 +6,35 @@
  */
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+#include "doctor_data.h"
+#include "doctor_schedule.h"
+#include "patient_data.h"
 #include "patient_management.h"
 #include "utils.h"
-#include "doctor_schedule.h"
-#include "doctor_data.h"
-#include "patient_data.h"
 
 // Constants representing menu options
 #define ENTER_PATIENT_RECORD 1
 #define SEARCH_PATIENT_BY_ID 2
 #define VIEW_ALL_PATIENTS 3
 #define DISCHARGE_PATIENT 4
-#define MANAGE_DOCTOR_SCHEDULE 5
-#define PATIENT_ADMIT_REPORT 6
-#define PATIENT_DISCHARGE_REPORT 7
-#define DOC_SCHE_REPORT 8
-#define ROOM_USAGE_REPORT 9
-#define EXIT_PROGRAM 10
+#define BACKUP_PATIENTS_FILE 5
+#define RESTORE_PATIENT_DATA 6
+#define MANAGE_DOCTOR_SCHEDULE 7
+#define PATIENT_ADMIT_REPORT 8
+#define PATIENT_DISCHARGE_REPORT 9
+#define DOC_SCHE_REPORT 10
+#define ROOM_USAGE_REPORT 11
+#define EXIT_PROGRAM 12
 
-#define DEFAULT_VALUE (-1)  
-#define VALID_INPUT 1       
+#define DEFAULT_VALUE (-1)
+#define VALID_INPUT 1
 
 // Function prototype for the main menu
 void menu();
 void doctorMenu();
-int getPatientReportChoice();
+int  getPatientReportChoice();
 
 /*
  * Function: main
@@ -64,7 +66,7 @@ void menu()
 
     do
     {
-        userInput = DEFAULT_VALUE;  
+        userInput = DEFAULT_VALUE;
 
         // Display menu options
         printf("\nWelcome to the BCIT Hospital Patient Management System.\n"
@@ -85,60 +87,69 @@ void menu()
                "12: Exit.\n");
 
         // Read user input and validate
-        if (scanf("%d", &userInput) != VALID_INPUT)
+        if(scanf("%d", &userInput) != VALID_INPUT)
         {
             printf("Invalid input. Please enter a number.\n");
-            clearInputBuffer(); 
+            clearInputBuffer();
             continue;
         }
 
         // Process user selection
-        switch (userInput)
+        switch(userInput)
         {
-        case ENTER_PATIENT_RECORD:
-            clearInputBuffer();
-            addPatientRecord();
-            break;
-        case SEARCH_PATIENT_BY_ID:
-            clearInputBuffer();
-            searchPatientById();
-            break;
-        case VIEW_ALL_PATIENTS:
-            clearInputBuffer();
-            viewPatientRecords();
-            break;
-        case DISCHARGE_PATIENT:
-            clearInputBuffer();
-            dischargePatient();
-            break;
-        case MANAGE_DOCTOR_SCHEDULE:
-            clearInputBuffer();
-            doctorMenu();
-            break;
-        case PATIENT_ADMIT_REPORT:
-            clearInputBuffer();
-            displayPatientReport(getPatientReportChoice());
-            break;
-        case PATIENT_DISCHARGE_REPORT:
-            clearInputBuffer();
-            displayDischargedPatientReport(getPatientReportChoice());
-            break;
-        case DOC_SCHE_REPORT:
-            clearInputBuffer();
-            printDoctorUtilizationReport();
-            break;
-        case ROOM_USAGE_REPORT:
-            clearInputBuffer();
-            displayRoomUsageReport();
-            break;
-        case EXIT_PROGRAM:
-            puts("Exiting program, have a nice day!\n");
-            clearMemory();
-            return;
-        default:
-            printf("Invalid option. Please enter a number between 1 and 6.\n");
+            case ENTER_PATIENT_RECORD:
+                clearInputBuffer();
+                addPatientRecord();
+                break;
+            case SEARCH_PATIENT_BY_ID:
+                clearInputBuffer();
+                searchPatientById();
+                break;
+            case VIEW_ALL_PATIENTS:
+                clearInputBuffer();
+                viewPatientRecords();
+                break;
+            case DISCHARGE_PATIENT:
+                clearInputBuffer();
+                dischargePatient();
+                break;
+            case BACKUP_PATIENTS_FILE:
+                clearInputBuffer();
+                backupPatientSystem();
+                break;
+            case RESTORE_PATIENT_DATA:
+                clearInputBuffer();
+                initializePatientSystem();
+                break;
+            case MANAGE_DOCTOR_SCHEDULE:
+                clearInputBuffer();
+                doctorMenu();
+                break;
+            case PATIENT_ADMIT_REPORT:
+                clearInputBuffer();
+                displayPatientReport(getPatientReportChoice());
+                break;
+            case PATIENT_DISCHARGE_REPORT:
+                clearInputBuffer();
+                displayDischargedPatientReport(getPatientReportChoice());
+                break;
+            case DOC_SCHE_REPORT:
+                clearInputBuffer();
+                printDoctorUtilizationReport();
+                break;
+            case ROOM_USAGE_REPORT:
+                clearInputBuffer();
+                displayRoomUsageReport();
+                break;
+            case EXIT_PROGRAM:
+                puts("Exiting program, have a nice day!\n");
+                clearMemory();
+                return;
+            default:
+                printf("Invalid option. Please enter a number between 1 and 6.\n");
         }
-    } while (userInput != EXIT_PROGRAM);
+    }
+    while(userInput != EXIT_PROGRAM);
 }
 
 /*
@@ -185,26 +196,30 @@ void doctorMenu()
                        "one of the options above.\n");
                 userInput = DEFAULT_VALUE;
         }
-    } while (userInput != EXIT_PROGRAM);
+    }
+    while(userInput != EXIT_PROGRAM);
 }
 
 int getPatientReportChoice()
 {
     int choice;
 
-    do {
+    do
+    {
         printf("Select timeframe:\n");
         printf("1. Daily\n");
         printf("2. Weekly\n");
         printf("3. Monthly\n");
         printf("Enter choice: ");
 
-        if (scanf("%d", &choice) != 1 || choice < 1 || choice > 3) {
+        if(scanf("%d", &choice) != 1 || choice < 1 || choice > 3)
+        {
             printf("Invalid input. Please enter a number between 1 and 3.\n");
-            clearInputBuffer();  // Clear invalid input
-            choice = 0;  // Reset choice to force re-entry
+            clearInputBuffer(); // Clear invalid input
+            choice = 0;         // Reset choice to force re-entry
         }
-    } while (choice < 1 || choice > 3);
+    }
+    while(choice < 1 || choice > 3);
 
     printf("\n");
 
