@@ -261,11 +261,17 @@ void dischargePatient(void)
     }
 }
 
+/*
+ * Creates a backup of current patient records to patients.dat file.
+ */
 void backupPatientSystem()
 {
     updatePatientsFile();
 }
 
+/*
+ * Restores patient records from patients.dat file.
+ */
 void restoreDataFromFile()
 {
     initializePatientSystem();
