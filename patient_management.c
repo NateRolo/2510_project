@@ -11,6 +11,7 @@
 #include <time.h>
 #include "patient_data.h"
 #include "utils.h"
+#include  <errno.h>
 
 // Private constants
 #define INITIAL_CAPACITY 1
@@ -211,7 +212,7 @@ void dischargePatient(void)
     if(patientHead == NULL)
     {
         puts("No patients to discharge!");
-        return; // Add return here
+        return; 
     }
 
     Patient *patientToDischarge = getPatientToDischarge();
@@ -258,6 +259,22 @@ void dischargePatient(void)
     {
         printf("Patient discharge cancelled.\n");
     }
+}
+
+/*
+ * Creates a backup of current patient records to patients.dat file.
+ */
+void backupPatientSystem()
+{
+    updatePatientsFile();
+}
+
+/*
+ * Restores patient records from patients.dat file.
+ */
+void restoreDataFromFile()
+{
+    initializePatientSystem();
 }
 
 /*
@@ -476,28 +493,58 @@ static void removePatientFromSystem(Patient *patient)
  */
 static void updatePatientsFile(void)
 {
-    FILE *pPatients = fopen("patients.dat", "wb");
-
-    if(pPatients == NULL)
+    FILE *pTemp;
+    pTemp = fopen("patients.tmp", "wb");
+    if(pTemp == NULL)
     {
-        perror("Patients.dat not found, patient not deleted from file.");
-        return;
+        perror("Error creating temporary backup file");
+        return; // Keep original patients.dat
     }
 
-    PatientNode *current = patientHead;
+    PatientNode *current;
+    int          write_error;
+    
+    current = patientHead;
+    write_error = 0;
+    
     while(current != NULL)
     {
-        if(fwrite(&(current->data), sizeof(Patient), 1, pPatients) != 1)
+        if(fwrite(&(current->data), sizeof(Patient), 1, pTemp) != 1)
         {
-            perror("Error writing patient to file");
-            fclose(pPatients);
-            return;
+            perror("Error writing patient to temporary file");
+            write_error = 1;
+            break; // Stop writing
         }
         current = current->nextNode;
     }
 
-    puts("patients.dat updated.");
-    fclose(pPatients);
+    if(fclose(pTemp) != 0)
+    { // Also check fclose error
+        perror("Error closing temporary backup file");
+        write_error = 1;
+    }
+
+    if(!write_error)
+    {
+        // Only replace original if temp write was fully successful
+        if(remove("patients.dat") != 0 && errno != ENOENT)
+        { 
+            perror("Error removing old patients.dat");
+        }
+        if(rename("patients.tmp", "patients.dat") != 0)
+        {
+            perror("Error renaming temporary file to patients.dat");
+        }
+        else
+        {
+            puts("patients.dat updated successfully."); // Success message only after rename
+        }
+    }
+    else
+    {
+        puts("Backup failed. Original patients.dat remains unchanged.");
+        remove("patients.tmp"); // Clean up failed temp file
+    }
 }
 
 /*

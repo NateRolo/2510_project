@@ -1,0 +1,5 @@
+Doctor Utilization Report
+==========================
+Dr.Raymond - Shifts Covered: 0
+Dr.George - Shifts Covered: 0
+Dr.Sofia - Shifts Covered: 0

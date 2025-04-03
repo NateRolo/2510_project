@@ -64,6 +64,20 @@ void searchPatientById(void);
 void dischargePatient(void);
 
 /*
+ * Function: backupPatientSystem
+ * -----------------------------
+ * Saves all current patient records to a file for backup purposes.
+ */
+void backupPatientSystem(void);
+
+/*
+ * Function: restoreDataFromFile
+ * -----------------------------
+ * Restores patient records from a previously backed-up file.
+ */
+void restoreDataFromFile(void);
+
+/*
  * Function: clearMemory
  * ---------------------
  * Frees all dynamically allocated memory used for storing patient records.

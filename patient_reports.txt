@@ -1,0 +1,7 @@
+
+   Patient Admission Report - Daily - 2025-03-31
+=======================================
+Total patients admitted: 0
+---------------------------------------
+| No patients admitted in this timeframe |
+---------------------------------------
