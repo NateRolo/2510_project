@@ -90,7 +90,6 @@ void initializePatientSystem(void)
         patientIDCounter = computeNextPatientId();
         fclose(pPatients);
         puts("\nPatients successfully loaded from file.");
-        printList(patientHead);
     }
     else
     {
@@ -99,19 +98,6 @@ void initializePatientSystem(void)
     }
 }
 
-/*
- * Iterates through the patient records stored in the linked list starting from the given head node
- * and prints out each patient's details.
- */
-void printList(PatientNode *head)
-{
-    PatientNode *current = head;
-    while(current)
-    {
-        printf("%d\n%s\n", current->data.patientId, current->data.name);
-        current = current->nextNode;
-    }
-}
 
 /*
  * Initializes the patient management system with default settings.
@@ -836,7 +822,7 @@ static int countDischargedPatientsByTimeframe(int timeframe)
     return count;
 }
 
-// **Updated function to print only discharged patients matching the timeframe**
+
 void printDischargedFormattedReport(FILE *file, const char *header, int result, int timeframe)
 {
     time_t now = time(NULL);
