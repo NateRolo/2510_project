@@ -5,13 +5,13 @@
  */
 
 #include "patient_management.h"
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include "patient_data.h"
 #include "utils.h"
-#include  <errno.h>
 
 // Private constants
 #define INITIAL_CAPACITY 1
@@ -43,10 +43,12 @@ static void         updatePatientsFile(void);
 static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data);
 static int          isRoomOccupiedInList(int roomNumber, PatientNode *head);
 static int          computeNextPatientId(void);
-static int countPatientsByTimeframe(int timeframe);
-void printFormattedReport(FILE *file, const char *header, int result, int timeframe);
+static int          countPatientsByTimeframe(int timeframe);
+void                printFormattedReport(FILE *file, const char *header, int result, int timeframe);
 static void         logRoomUsage(int roomNumber);
-void displayRoomUsageReport(void);
+void                displayRoomUsageReport(void);
+void                clearList(void);
+
 
 /*
  * Initializes the patient management system.
@@ -54,6 +56,8 @@ void displayRoomUsageReport(void);
  */
 void initializePatientSystem(void)
 {
+    clearList();
+
     FILE *pPatients = fopen("patients.dat", "rb");
 
     if(pPatients != NULL)
@@ -198,7 +202,7 @@ void dischargePatient(void)
     if(patientHead == NULL)
     {
         puts("No patients to discharge!");
-        return; 
+        return;
     }
 
     Patient *patientToDischarge = getPatientToDischarge();
@@ -213,7 +217,7 @@ void dischargePatient(void)
     {
         // Save discharged patient data
         DischargedPatient dischargedPatient;
-        dischargedPatient.patient     = *patientToDischarge;
+        dischargedPatient.patient       = *patientToDischarge;
         dischargedPatient.dischargeDate = time(NULL); // Current time as discharge time
 
         // Append to discharged patients file
@@ -268,7 +272,7 @@ void restoreDataFromFile()
  */
 void clearMemory()
 {
-    PatientNode  *current = patientHead;
+    PatientNode *current = patientHead;
     while(current != NULL)
     {
         PatientNode *next = current->nextNode;
@@ -489,10 +493,10 @@ static void updatePatientsFile(void)
 
     PatientNode *current;
     int          write_error;
-    
-    current = patientHead;
+
+    current     = patientHead;
     write_error = 0;
-    
+
     while(current != NULL)
     {
         if(fwrite(&(current->data), sizeof(Patient), 1, pTemp) != 1)
@@ -514,7 +518,7 @@ static void updatePatientsFile(void)
     {
         // Only replace original if temp write was fully successful
         if(remove("patients.dat") != 0 && errno != ENOENT)
-        { 
+        {
             perror("Error removing old patients.dat");
         }
         if(rename("patients.tmp", "patients.dat") != 0)
@@ -613,7 +617,7 @@ static int computeNextPatientId(void)
  */
 static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data)
 {
-    PatientNode *newNode = malloc(sizeof(PatientNode ));
+    PatientNode *newNode = malloc(sizeof(PatientNode));
     if(newNode == NULL)
     {
         free(newNode);
@@ -625,7 +629,7 @@ static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data)
 
     if(head == NULL)
     {
-        puts("No previous patients, patient added at start of list");
+        // puts("No previous patients, patient added at start of list");
         return newNode;
     }
 
@@ -643,45 +647,45 @@ static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data)
 // Function to count patients admitted within a given timeframe
 static int countPatientsByTimeframe(int timeframe)
 {
-    if (patientHead == NULL)
+    if(patientHead == NULL)
     {
         printf("No patients admitted!\n");
         return 0;
     }
 
-    int count = 0;
-    time_t now = time(NULL);
+    int        count       = 0;
+    time_t     now         = time(NULL);
     struct tm *currentTime = localtime(&now);
 
     // Extract current year, day of year, and month
-    int currentYear = currentTime->tm_year;
+    int currentYear      = currentTime->tm_year;
     int currentDayOfYear = currentTime->tm_yday;
-    int currentMonth = currentTime->tm_mon;
+    int currentMonth     = currentTime->tm_mon;
 
     PatientNode *current = patientHead;
-    while (current != NULL)
+    while(current != NULL)
     {
-        time_t admissionTimestamp = current->data.admissionDate;
-        struct tm *admissionTime = localtime(&admissionTimestamp);
+        time_t     admissionTimestamp = current->data.admissionDate;
+        struct tm *admissionTime      = localtime(&admissionTimestamp);
 
         // Extract admission year, day of year, and month
-        int admissionYear = admissionTime->tm_year;
+        int admissionYear      = admissionTime->tm_year;
         int admissionDayOfYear = admissionTime->tm_yday;
-        int admissionMonth = admissionTime->tm_mon;
+        int admissionMonth     = admissionTime->tm_mon;
 
         // Calculate the difference in hours directly
         double secondsDiff = difftime(now, admissionTimestamp);
-        int hoursDiff = (int)(secondsDiff / 3600);
+        int    hoursDiff   = (int) (secondsDiff / 3600);
 
         // Adjusted time conditions
         int past24Hours = (hoursDiff <= 24);
-        int sameWeek = (admissionYear == currentYear && (currentDayOfYear - admissionDayOfYear) < 7);
-        int sameMonth = (admissionYear == currentYear && admissionMonth == currentMonth);
+        int sameWeek    = (admissionYear == currentYear && (currentDayOfYear - admissionDayOfYear) < 7);
+        int sameMonth   = (admissionYear == currentYear && admissionMonth == currentMonth);
 
         // Increment count based on timeframe
-        if ((timeframe == 1 && past24Hours) ||  // Daily
-            (timeframe == 2 && sameWeek) ||     // Weekly
-            (timeframe == 3 && sameMonth))      // Monthly
+        if((timeframe == 1 && past24Hours) || // Daily
+           (timeframe == 2 && sameWeek) ||    // Weekly
+           (timeframe == 3 && sameMonth))     // Monthly
         {
             count++;
         }
@@ -695,9 +699,9 @@ static int countPatientsByTimeframe(int timeframe)
 // **Updated Function** to print only patients in the selected timeframe
 void printFormattedReport(FILE *file, const char *header, int result, int timeframe)
 {
-    time_t now = time(NULL);
+    time_t     now         = time(NULL);
     struct tm *currentTime = localtime(&now);
-    char currentTimeStr[20];
+    char       currentTimeStr[20];
     strftime(currentTimeStr, sizeof(currentTimeStr), "%Y-%m-%d", currentTime);
 
     printf("%s - %s\n", header, currentTimeStr);
@@ -710,7 +714,7 @@ void printFormattedReport(FILE *file, const char *header, int result, int timefr
     fprintf(file, "Total patients admitted: %d\n", result);
     fprintf(file, "---------------------------------------\n");
 
-    if (result == 0)
+    if(result == 0)
     {
         printf("| No patients admitted in this timeframe |\n");
         printf("---------------------------------------\n");
@@ -721,38 +725,45 @@ void printFormattedReport(FILE *file, const char *header, int result, int timefr
     else
     {
         PatientNode *patient = patientHead;
-        struct tm *admissionTime;
-        char admissionDateStr[20];
+        struct tm   *admissionTime;
+        char         admissionDateStr[20];
 
-        while (patient != NULL)
+        while(patient != NULL)
         {
             time_t admissionTimestamp = patient->data.admissionDate;
-            admissionTime = localtime(&admissionTimestamp);
+            admissionTime             = localtime(&admissionTimestamp);
 
             double secondsDiff = difftime(now, admissionTimestamp);
-            int hoursDiff = secondsDiff / 3600;
+            int    hoursDiff   = secondsDiff / 3600;
 
             int past24Hours = (hoursDiff <= 24);
-            int sameWeek = (admissionTime->tm_year == currentTime->tm_year &&
+            int sameWeek    = (admissionTime->tm_year == currentTime->tm_year &&
                             (currentTime->tm_yday - admissionTime->tm_yday) < 7);
-            int sameMonth = (admissionTime->tm_year == currentTime->tm_year &&
-                             admissionTime->tm_mon == currentTime->tm_mon);
+            int sameMonth =
+                    (admissionTime->tm_year == currentTime->tm_year && admissionTime->tm_mon == currentTime->tm_mon);
 
             // **Filter patients based on timeframe**
-            if ((timeframe == 1 && past24Hours) ||
-                (timeframe == 2 && sameWeek) ||
-                (timeframe == 3 && sameMonth))
+            if((timeframe == 1 && past24Hours) || (timeframe == 2 && sameWeek) || (timeframe == 3 && sameMonth))
             {
                 strftime(admissionDateStr, sizeof(admissionDateStr), "%Y-%m-%d", admissionTime);
 
                 printf("| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Admitted: %-10s |\n",
-                       patient->data.patientId, patient->data.name,
-                       patient->data.ageInYears, patient->data.roomNumber, patient->data.diagnosis, admissionDateStr);
+                       patient->data.patientId,
+                       patient->data.name,
+                       patient->data.ageInYears,
+                       patient->data.roomNumber,
+                       patient->data.diagnosis,
+                       admissionDateStr);
                 printf("---------------------------------------\n");
 
-                fprintf(file, "| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Admitted: %-10s |\n",
-                        patient->data.patientId, patient->data.name,
-                        patient->data.ageInYears, patient->data.roomNumber, patient->data.diagnosis, admissionDateStr);
+                fprintf(file,
+                        "| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Admitted: %-10s |\n",
+                        patient->data.patientId,
+                        patient->data.name,
+                        patient->data.ageInYears,
+                        patient->data.roomNumber,
+                        patient->data.diagnosis,
+                        admissionDateStr);
                 fprintf(file, "---------------------------------------\n");
             }
 
@@ -767,7 +778,7 @@ void displayPatientReport(int choice)
     int result = countPatientsByTimeframe(choice);
 
     FILE *file = fopen("patient_reports.txt", "a");
-    if (file == NULL)
+    if(file == NULL)
     {
         printf("Error opening file for writing!\n");
         return;
@@ -785,34 +796,32 @@ void displayPatientReport(int choice)
 static int countDischargedPatientsByTimeframe(int timeframe)
 {
     FILE *file = fopen("discharged_patients.dat", "rb");
-    if (file == NULL)
+    if(file == NULL)
     {
         printf("No discharged patients found!\n");
         return 0;
     }
 
-    int count = 0;
-    time_t now = time(NULL);
+    int        count       = 0;
+    time_t     now         = time(NULL);
     struct tm *currentTime = localtime(&now);
 
     DischargedPatient dischargedPatient;
-    while (fread(&dischargedPatient, sizeof(DischargedPatient), 1, file) == 1)
+    while(fread(&dischargedPatient, sizeof(DischargedPatient), 1, file) == 1)
     {
-        time_t dischargeTimestamp = dischargedPatient.dischargeDate;
-        struct tm *dischargeTime = localtime(&dischargeTimestamp);
+        time_t     dischargeTimestamp = dischargedPatient.dischargeDate;
+        struct tm *dischargeTime      = localtime(&dischargeTimestamp);
 
         double secondsDiff = difftime(now, dischargeTimestamp);
-        int hoursDiff = secondsDiff / 3600;
+        int    hoursDiff   = secondsDiff / 3600;
 
         int past24Hours = (hoursDiff <= 24);
-        int sameWeek = (dischargeTime->tm_year == currentTime->tm_year &&
-                        (currentTime->tm_yday - dischargeTime->tm_yday) < 7);
-        int sameMonth = (dischargeTime->tm_year == currentTime->tm_year &&
-                         dischargeTime->tm_mon == currentTime->tm_mon);
+        int sameWeek =
+                (dischargeTime->tm_year == currentTime->tm_year && (currentTime->tm_yday - dischargeTime->tm_yday) < 7);
+        int sameMonth =
+                (dischargeTime->tm_year == currentTime->tm_year && dischargeTime->tm_mon == currentTime->tm_mon);
 
-        if ((timeframe == 1 && past24Hours) ||
-            (timeframe == 2 && sameWeek) ||
-            (timeframe == 3 && sameMonth))
+        if((timeframe == 1 && past24Hours) || (timeframe == 2 && sameWeek) || (timeframe == 3 && sameMonth))
         {
             count++;
         }
@@ -825,9 +834,9 @@ static int countDischargedPatientsByTimeframe(int timeframe)
 
 void printDischargedFormattedReport(FILE *file, const char *header, int result, int timeframe)
 {
-    time_t now = time(NULL);
+    time_t     now         = time(NULL);
     struct tm *currentTime = localtime(&now);
-    char currentTimeStr[20];
+    char       currentTimeStr[20];
     strftime(currentTimeStr, sizeof(currentTimeStr), "%Y-%m-%d", currentTime);
 
     printf("%s - %s\n", header, currentTimeStr);
@@ -840,7 +849,7 @@ void printDischargedFormattedReport(FILE *file, const char *header, int result, 
     fprintf(file, "Total patients discharged: %d\n", result);
     fprintf(file, "---------------------------------------\n");
 
-    if (result == 0)
+    if(result == 0)
     {
         printf("| No patients discharged in this timeframe |\n");
         printf("---------------------------------------\n");
@@ -851,40 +860,47 @@ void printDischargedFormattedReport(FILE *file, const char *header, int result, 
     else
     {
         FILE *fileRead = fopen("discharged_patients.dat", "rb");
-        if (fileRead == NULL)
+        if(fileRead == NULL)
         {
             printf("Error opening file to read discharged patients.\n");
             return;
         }
 
         DischargedPatient dischargedPatient;
-        while (fread(&dischargedPatient, sizeof(DischargedPatient), 1, fileRead) == 1)
+        while(fread(&dischargedPatient, sizeof(DischargedPatient), 1, fileRead) == 1)
         {
-            time_t dischargeTimestamp = dischargedPatient.dischargeDate;
-            struct tm *dischargeTime = localtime(&dischargeTimestamp);
-            char dischargeDateStr[20];
+            time_t     dischargeTimestamp = dischargedPatient.dischargeDate;
+            struct tm *dischargeTime      = localtime(&dischargeTimestamp);
+            char       dischargeDateStr[20];
             strftime(dischargeDateStr, sizeof(dischargeDateStr), "%Y-%m-%d", dischargeTime);
 
             double secondsDiff = difftime(now, dischargeTimestamp);
-            int hoursDiff = secondsDiff / 3600;
+            int    hoursDiff   = secondsDiff / 3600;
 
             int past24Hours = (hoursDiff <= 24);
-            int sameWeek = (dischargeTime->tm_year == currentTime->tm_year &&
+            int sameWeek    = (dischargeTime->tm_year == currentTime->tm_year &&
                             (currentTime->tm_yday - dischargeTime->tm_yday) < 7);
-            int sameMonth = (dischargeTime->tm_year == currentTime->tm_year &&
-                             dischargeTime->tm_mon == currentTime->tm_mon);
+            int sameMonth =
+                    (dischargeTime->tm_year == currentTime->tm_year && dischargeTime->tm_mon == currentTime->tm_mon);
 
             // **Filter discharged patients by timeframe**
-            if ((timeframe == 1 && past24Hours) ||
-                (timeframe == 2 && sameWeek) ||
-                (timeframe == 3 && sameMonth))
+            if((timeframe == 1 && past24Hours) || (timeframe == 2 && sameWeek) || (timeframe == 3 && sameMonth))
             {
                 printf("| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Discharged: %-10s |\n",
-                       dischargedPatient.patient.patientId, dischargedPatient.patient.name,
-                       dischargedPatient.patient.ageInYears, dischargedPatient.patient.roomNumber, dischargedPatient.patient.diagnosis, dischargeDateStr);
-                fprintf(file, "| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Discharged: %-10s |\n",
-                        dischargedPatient.patient.patientId, dischargedPatient.patient.name,
-                        dischargedPatient.patient.ageInYears, dischargedPatient.patient.roomNumber, dischargedPatient.patient.diagnosis, dischargeDateStr);
+                       dischargedPatient.patient.patientId,
+                       dischargedPatient.patient.name,
+                       dischargedPatient.patient.ageInYears,
+                       dischargedPatient.patient.roomNumber,
+                       dischargedPatient.patient.diagnosis,
+                       dischargeDateStr);
+                fprintf(file,
+                        "| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Discharged: %-10s |\n",
+                        dischargedPatient.patient.patientId,
+                        dischargedPatient.patient.name,
+                        dischargedPatient.patient.ageInYears,
+                        dischargedPatient.patient.roomNumber,
+                        dischargedPatient.patient.diagnosis,
+                        dischargeDateStr);
 
                 printf("---------------------------------------\n");
                 fprintf(file, "---------------------------------------\n");
@@ -901,7 +917,7 @@ void displayDischargedPatientReport(int choice)
     int result = countDischargedPatientsByTimeframe(choice);
 
     FILE *file = fopen("discharged_reports.txt", "a");
-    if (file == NULL)
+    if(file == NULL)
     {
         printf("Error opening file for writing!\n");
         return;
@@ -935,10 +951,23 @@ static void logRoomUsage(int roomNumber)
     // printf("Room %d usage logged.\n", roomNumber);
 }
 
+void clearList(void)
+{
+    while(patientHead != NULL)
+    {
+        PatientNode *temp = patientHead;
+        patientHead       = patientHead->nextNode;
+        free(temp);
+    }
+    patientHead      = NULL;
+    totalPatients    = 0;
+    patientIDCounter = DEFAULT_ID;
+}
+
 void displayRoomUsageReport(void)
 {
-    FILE *file = fopen("room_usage.txt", "r"); // Open in read mode
-    int   roomCounts[50 + 1] = {0}; // Array to store counts (index 0 unused)
+    FILE *file               = fopen("room_usage.txt", "r"); // Open in read mode
+    int   roomCounts[50 + 1] = { 0 };                        // Array to store counts (index 0 unused)
     int   roomNumber;
     int   totalEntries = 0;
     int   validEntries = 0;
