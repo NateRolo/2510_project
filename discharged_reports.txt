@@ -1,7 +1,0 @@
-
-   Discharged Patient Report - Weekly - 2025-04-03
-=======================================
-Total patients discharged: 1
----------------------------------------
-| ID: 1     Name: Bob             | Age: 20  Room: 1     Diagnosis: Fever                | Discharged: 2025-04-03 |
----------------------------------------

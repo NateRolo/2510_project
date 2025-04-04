@@ -47,8 +47,7 @@ static int          countPatientsByTimeframe(int timeframe);
 void                printFormattedReport(FILE *file, const char *header, int result, int timeframe);
 static void         logRoomUsage(int roomNumber);
 void                displayRoomUsageReport(void);
-void                clearList(void);
-
+static void         clearBinaryFile(const char* fileName);
 
 /*
  * Initializes the patient management system.
@@ -56,52 +55,72 @@ void                clearList(void);
  */
 void initializePatientSystem(void)
 {
-    clearList();
+    clearMemory();
 
-    FILE *pPatients = fopen("patients.dat", "rb");
+    FILE *file = fopen("patients.dat", "rb");
 
-    if(pPatients != NULL)
+    if (file == NULL)
     {
-        fseek(pPatients, 0, SEEK_END);
-        long fileSize = ftell(pPatients);
-        rewind(pPatients);
+        puts("Error reading patients.dat. Initializing with default setting.");
+        initializePatientSystemDefault();
+        return;
+    }
 
-        size_t count = fileSize / sizeof(Patient);
+    if (fgetc(file) == EOF)
+    {
+        fclose(file);
+        puts("patients.dat is empty. Initializing with default setting.");
+        initializePatientSystemDefault();
+        return;
+    }
+    rewind(file);
 
-        if(count == 0)
+    // Populate Linked List
+    Patient tempPatient;
+    int foundData = 0;
+
+    while (fread(&tempPatient, sizeof(Patient), 1, file) == 1)
+    {
+        foundData = 1;
+        patientHead = insertPatientAtEndOfList(patientHead, tempPatient);
+        if (patientHead == NULL)
         {
-            fclose(pPatients);
-            puts("\nPatients.dat was empty, initialized with default settings");
+            puts("Error: Unable to populate linked list from patients.dat.");
+            fclose(file);
             initializePatientSystemDefault();
             return;
         }
+        totalPatients++;
+    }
 
-        // read from file and populate to linked list
-        Patient tempPatient;
-        while(fread(&tempPatient, sizeof(Patient), 1, pPatients) == 1)
-        {
-            patientHead = insertPatientAtEndOfList(patientHead, tempPatient);
-            if(patientHead == NULL)
-            {
-                puts("Unable to populate linked list with data from patients.dat, patients"
-                     " initialized with default settings.");
-                initializePatientSystemDefault();
-                return;
-            }
-            totalPatients++;
-        }
+    fclose(file);
 
-        patientIDCounter = computeNextPatientId();
-        fclose(pPatients);
-        puts("\nPatients successfully loaded from file.");
+    if (!foundData)
+    {
+        puts("Warning: patients.dat contained no valid patient records.");
+        // Clear File If Only Invalid Data Found
+        clearBinaryFile("patients.dat");
+        initializePatientSystemDefault();
     }
     else
     {
-        puts("\nUnable to read patients.dat. Patients initialized with default settings.");
-        initializePatientSystemDefault();
+        patientIDCounter = computeNextPatientId();
+        puts("Patients successfully loaded from file.");
     }
 }
 
+void clearBinaryFile(const char* fileName)
+{
+    FILE *clearFile = fopen(fileName, "wb");
+    if (clearFile == NULL)
+    {
+        puts("Error: Unable to clear patients.dat.");
+    }
+    else
+    {
+        fclose(clearFile);
+    }
+}
 
 /*
  * Initializes the patient management system with default settings.
@@ -272,15 +291,15 @@ void restoreDataFromFile()
  */
 void clearMemory()
 {
-    PatientNode *current = patientHead;
-    while(current != NULL)
+    while(patientHead != NULL)
     {
-        PatientNode *next = current->nextNode;
-        free(current);
-        current = next;
+        PatientNode *temp = patientHead;
+        patientHead       = patientHead->nextNode;
+        free(temp);
     }
-    patientHead = NULL;
-    puts("Memory freed");
+    patientHead      = NULL;
+    totalPatients    = IS_EMPTY;
+    patientIDCounter = DEFAULT_ID;
 }
 
 
@@ -949,19 +968,6 @@ static void logRoomUsage(int roomNumber)
     fclose(file);
     // Optional: Add a confirmation message here if desired
     // printf("Room %d usage logged.\n", roomNumber);
-}
-
-void clearList(void)
-{
-    while(patientHead != NULL)
-    {
-        PatientNode *temp = patientHead;
-        patientHead       = patientHead->nextNode;
-        free(temp);
-    }
-    patientHead      = NULL;
-    totalPatients    = 0;
-    patientIDCounter = DEFAULT_ID;
 }
 
 void displayRoomUsageReport(void)
