@@ -663,7 +663,10 @@ static PatientNode *insertPatientAtEndOfList(PatientNode *head, Patient data)
     return head;
 }
 
-// Function to count patients admitted within a given timeframe
+/*
+ * Counts the number of patients admitted within
+ * the specified timeframe (daily, weekly, or monthly).
+ */
 static int countPatientsByTimeframe(int timeframe)
 {
     if(patientHead == NULL)
@@ -715,7 +718,10 @@ static int countPatientsByTimeframe(int timeframe)
     return count;
 }
 
-// **Updated Function** to print only patients in the selected timeframe
+/*
+ * Prints a formatted report of patients admitted within
+ * the selected timeframe to both console and patients_reports file.
+ */
 void printFormattedReport(FILE *file, const char *header, int result, int timeframe)
 {
     time_t     now         = time(NULL);
@@ -761,7 +767,7 @@ void printFormattedReport(FILE *file, const char *header, int result, int timefr
             int sameMonth =
                     (admissionTime->tm_year == currentTime->tm_year && admissionTime->tm_mon == currentTime->tm_mon);
 
-            // **Filter patients based on timeframe**
+            // Filter patients based on timeframe
             if((timeframe == 1 && past24Hours) || (timeframe == 2 && sameWeek) || (timeframe == 3 && sameMonth))
             {
                 strftime(admissionDateStr, sizeof(admissionDateStr), "%Y-%m-%d", admissionTime);
@@ -791,7 +797,10 @@ void printFormattedReport(FILE *file, const char *header, int result, int timefr
     }
 }
 
-// Updated Function to display the report
+/*
+ * Generates and displays a report of admitted patients
+ * based on the selected timeframe.
+ */
 void displayPatientReport(int choice)
 {
     int result = countPatientsByTimeframe(choice);
@@ -811,7 +820,10 @@ void displayPatientReport(int choice)
     printf("\nReport successfully written to patient_reports.txt\n");
 }
 
-// Function to count discharged patients by timeframe
+/*
+ * Counts the number of discharged patients from a
+ * binary file within the specified timeframe.
+ */
 static int countDischargedPatientsByTimeframe(int timeframe)
 {
     FILE *file = fopen("discharged_patients.dat", "rb");
@@ -850,7 +862,10 @@ static int countDischargedPatientsByTimeframe(int timeframe)
     return count;
 }
 
-
+/*
+ * Prints a formatted report of discharged patients within
+ * the selected timeframe to both console and file.
+ */
 void printDischargedFormattedReport(FILE *file, const char *header, int result, int timeframe)
 {
     time_t     now         = time(NULL);
@@ -902,7 +917,7 @@ void printDischargedFormattedReport(FILE *file, const char *header, int result, 
             int sameMonth =
                     (dischargeTime->tm_year == currentTime->tm_year && dischargeTime->tm_mon == currentTime->tm_mon);
 
-            // **Filter discharged patients by timeframe**
+            // Filter discharged patients by timeframe
             if((timeframe == 1 && past24Hours) || (timeframe == 2 && sameWeek) || (timeframe == 3 && sameMonth))
             {
                 printf("| ID: %-5d Name: %-15s | Age: %-3d Room: %-5d Diagnosis: %-20s | Discharged: %-10s |\n",
@@ -930,7 +945,10 @@ void printDischargedFormattedReport(FILE *file, const char *header, int result, 
     }
 }
 
-// Updated function to display the discharged patient report
+/*
+ * Generates and displays a report of discharged
+ * patients based on the selected timeframe.
+ */
 void displayDischargedPatientReport(int choice)
 {
     int result = countDischargedPatientsByTimeframe(choice);
@@ -950,6 +968,10 @@ void displayDischargedPatientReport(int choice)
     printf("\nDischarge Report successfully written to discharged_reports.txt\n");
 }
 
+/*
+ * Appends the given room number to the
+ * room_usage.txt file for logging purposes.
+ */
 static void logRoomUsage(int roomNumber)
 {
     FILE *file = fopen("room_usage.txt", "a"); // Open in append mode
@@ -970,10 +992,14 @@ static void logRoomUsage(int roomNumber)
     // printf("Room %d usage logged.\n", roomNumber);
 }
 
+/*
+ * Reads room_usage.txt and displays a usage report
+ * showing how many times each valid room (1-50) was used.
+ */
 void displayRoomUsageReport(void)
 {
-    FILE *file               = fopen("room_usage.txt", "r"); // Open in read mode
-    int   roomCounts[50 + 1] = { 0 };                        // Array to store counts (index 0 unused)
+    FILE *file = fopen("room_usage.txt", "r");
+    int   roomCounts[50 + 1] = { 0 }; // Array to store counts (index 0 unused)
     int   roomNumber;
     int   totalEntries = 0;
     int   validEntries = 0;
@@ -982,16 +1008,7 @@ void displayRoomUsageReport(void)
 
     if(file == NULL)
     {
-        // It's okay if the file doesn't exist yet, just means no usage logged
-        if(errno == ENOENT) // Check if the error is "No such file or directory"
-        {
-            printf("No room usage has been logged yet (room_usage.txt not found).\n");
-        }
-        else
-        {
-            perror("Error opening room_usage.txt for reading");
-        }
-        printf("-------------------------\n");
+        printf("Error opening room_usage.txt for reading");
         return;
     }
 
@@ -1019,7 +1036,7 @@ void displayRoomUsageReport(void)
     int roomsReported = 0;
     for(int i = 1; i <= 50; i++)
     {
-        if(roomCounts[i] > 0) // Only print rooms that were actually used
+        if(roomCounts[i] > 0)
         {
             printf("%-4d | %d\n", i, roomCounts[i]);
             roomsReported++;

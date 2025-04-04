@@ -285,7 +285,11 @@ static int countDoctorShifts(int doctorId) {
     return shiftCount;
 }
 
-// Helper function to print the report in a formatted way and save it to a file
+/*
+ * Prints out a doctor utilization report and overwrites to
+ * doctor_utilization_report.txt showcasing number of shifts
+ * covered by doctors
+ */
 void printDoctorUtilizationReport() {
     FILE *reportFile = fopen("doctor_utilization_report.txt", "w");
     if (reportFile == NULL) {
