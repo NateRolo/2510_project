@@ -201,6 +201,15 @@ void doctorMenu()
     while(userInput != EXIT_PROGRAM);
 }
 
+/*
+ * Function: getPatientReportChoice
+ * --------------------------------
+ * Prompts the user to select a timeframe for patient reports (Daily, Weekly, Monthly).
+ * Validates the user's input to ensure it's one of the valid options (1, 2, or 3).
+ * Continues prompting until a valid selection is made.
+ *
+ * Returns: An integer representing the chosen timeframe (1 for Daily, 2 for Weekly, 3 for Monthly).
+ */
 int getPatientReportChoice()
 {
     int choice;

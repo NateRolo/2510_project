@@ -37,6 +37,12 @@ void assignDoctor(void);
  */
 void printFullSchedule(void);
 
+/*
+ * Function: printDoctorUtilizationReport
+ * --------------------------------------
+ * Calculates and prints a report detailing the number of shifts covered by each doctor.
+ * Displays the report on the console and writes it to the "doctor_utilization_report.txt" file.
+ */
 void printDoctorUtilizationReport();
 
 #endif // SCHEDULE_H
