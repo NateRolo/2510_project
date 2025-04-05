@@ -7,6 +7,7 @@
 #ifndef PATIENT_MANAGEMENT_H
 #define PATIENT_MANAGEMENT_H
 #include "patient_data.h"
+#include <stdio.h>
 
 typedef struct PatientNode
 {
@@ -128,13 +129,5 @@ void displayRoomUsageReport(void);
  */
 void printFormattedReport(FILE *file, const char *header, int result, int timeframe);
 
-/*
- * Function: clearBinaryFile
- * -------------------------
- * Clears the contents of a binary file by opening it in write mode.
- * 
- * fileName: The name of the file to clear
- */
-void clearBinaryFile(const char* fileName);
 
 #endif // PATIENT_MANAGEMENT_H 

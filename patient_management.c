@@ -46,6 +46,7 @@ static int          computeNextPatientId(void);
 static int          countPatientsByTimeframe(int timeframe);
 static void         logRoomUsage(int roomNumber);
 static void         clearBinaryFile(const char* fileName);
+static int          countDischargedPatientsByTimeframe(int timeframe);
 
 /*
  * Initializes the patient management system.
@@ -113,7 +114,7 @@ void initializePatientSystem(void)
  *
  * fileName: The name of the file to clear
  */
-void clearBinaryFile(const char* fileName)
+static void clearBinaryFile(const char* fileName)
 {
     FILE *clearFile = fopen(fileName, "wb");
     if (clearFile == NULL)
@@ -1022,8 +1023,6 @@ static int countPatientsByTimeframe(int timeframe)
 
     return count;
 }
-
-
 
 /*
  * Counts the number of discharged patients from a
