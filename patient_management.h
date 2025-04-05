@@ -87,15 +87,54 @@ void clearMemory();
 /*
  * Function: printList
  * -------------------
- * Iterates through the patient records stored in the linked list starting from the given head node
- * and prints out each patient's details. 
+ * Iterates through the patient linked list and prints each patient's details.
  */
 void printList(PatientNode *head);
 
+/*
+ * Function: displayPatientReport
+ * ------------------------------
+ * Displays and logs a report of admitted patients for a given timeframe.
+ *
+ * choice: Timeframe (1: Daily, 2: Weekly, 3: Monthly).
+ */
 void displayPatientReport(int choice);
 
+/*
+ * Function: displayDischargedPatientReport
+ * ----------------------------------------
+ * Displays and logs a report of discharged patients for a given timeframe.
+ *
+ * choice: Timeframe (1: Daily, 2: Weekly, 3: Monthly).
+ */
 void displayDischargedPatientReport(int choice);
 
+/*
+ * Function: displayRoomUsageReport
+ * --------------------------------
+ * Displays a report summarizing room usage based on "room_usage.txt".
+ */
 void displayRoomUsageReport(void);
+
+/*
+ * Function: printFormattedReport
+ * ------------------------------
+ * Helper to print a patient report (admission/discharge) to console and file.
+ *
+ * file: Output file stream.
+ * header: Report title.
+ * result: Total patient count for the report.
+ * timeframe: Timeframe used for filtering patient details.
+ */
+void printFormattedReport(FILE *file, const char *header, int result, int timeframe);
+
+/*
+ * Function: clearBinaryFile
+ * -------------------------
+ * Clears the contents of a binary file by opening it in write mode.
+ * 
+ * fileName: The name of the file to clear
+ */
+void clearBinaryFile(const char* fileName);
 
 #endif // PATIENT_MANAGEMENT_H 
