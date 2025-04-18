@@ -1,0 +1,23 @@
+
+   Discharged Patient Report - Weekly - 2025-04-03
+=======================================
+Total patients discharged: 0
+---------------------------------------
+| No patients discharged in this timeframe |
+---------------------------------------
+
+   Discharged Patient Report - Weekly - 2025-04-03
+=======================================
+Total patients discharged: 2
+---------------------------------------
+| ID: 1     Name: Nate            | Age: 26  Room: 1     Diagnosis: Fever                | Discharged: 2025-04-03 |
+---------------------------------------
+| ID: 2     Name: Arsh            | Age: 20  Room: 2     Diagnosis: Cold                 | Discharged: 2025-04-03 |
+---------------------------------------
+
+   Discharged Patient Report - Weekly - 2025-04-03
+=======================================
+Total patients discharged: 0
+---------------------------------------
+| No patients discharged in this timeframe |
+---------------------------------------
